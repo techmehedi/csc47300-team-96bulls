@@ -1,0 +1,39 @@
+'''
+
+15
+
+2, -2, 3
+
+[16, 6, 5, 4, 2]
+
+res = float('inf')
+
+res = 3
+
+'''
+
+def leastAmountOfStocks(stocks, capital):
+    if len(stocks) == 0 or capital == 0:
+        return -1
+    
+    stocks.sort(reverse=True)
+    memo = {0: float('inf')}
+    def helper(i, remaining, numPurchased):
+        if i >= len(stocks) or remaining < 0:
+            return 0
+        if remaining in memo or remaining == 0:
+            memo[remaining] = min(memo[remaining], numPurchased)
+            return memo[remaining]
+
+        memo[remaining] = min(helper(i, remaining - stocks[i], numPurchased + 1), helper(i + 1, remaining, numPurchased))
+
+        return memo[remaining]
+    
+    for i in range(len(stocks)):
+        if stocks[i] > capital:
+            continue
+        helper(i, capital, 0)
+    
+    return -1 if memo[0] == float('inf') else memo[0]
+
+print(leastAmountOfStocks([3, 4, 2], 15))

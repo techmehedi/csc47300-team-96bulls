@@ -5,25 +5,41 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AI Interviewer Web App</title>
   <link rel="stylesheet" href="main.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
   <div class="container">
     <header>
       <h1>AI-Powered Technical Interview Simulator</h1>
+      <p class="subtitle">Practice coding interviews interactively with AI-generated questions.</p>
+      <a href="login.html" class="login-icon" title="Login">
+        <i class="fa-solid fa-user-circle"></i>
+      </a>
     </header>
 
     <main>
-      <section class="description">
-        <p>
-          An idea we've come up with for our web application will help students and 
-          job-seekers prepare for coding interviews by simulating the experience of solving 
-          <strong>LeetCode-style questions</strong>. Users can select a topic 
-          and difficulty level from dropdown menus, then an AI agent will 
-          generate a coding challenge and act as the interviewer in a live 
-          chat pane. On the right side, users can write and test their code 
-          in a built-in editor.
-        </p>
-    </section>
+      <section class="demo">
+        <h2>Get Started</h2>
+        <form>
+          <label for="topic">Topic:</label>
+          <select id="topic">
+            <option>Arrays</option>
+            <option>Strings</option>
+            <option>Graphs</option>
+            <option>Dynamic Programming</option>
+            <option>Trees</option>
+          </select>
+
+          <label for="difficulty">Difficulty:</label>
+          <select id="difficulty">
+            <option>Easy</option>
+            <option>Medium</option>
+            <option>Hard</option>
+          </select>
+
+          <button type="submit">Generate Question</button>
+        </form>
+      </section>
     </main>
   </div>
 </body>
