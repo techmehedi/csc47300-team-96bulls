@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Services • AI Interviewer</title>
+  <link rel="stylesheet" href="main.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="nav-container">
+      <a href="index.html" class="brand"><i class="fa-solid fa-robot"></i><span>AI Interviewer</span></a>
+      <input type="checkbox" id="nav-toggle" class="nav-toggle" aria-label="Toggle navigation">
+      <label for="nav-toggle" class="nav-toggle-btn"><span></span><span></span><span></span></label>
+      <nav class="site-nav">
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="services.html" class="active">Services</a>
+        <a href="contact.html">Contact</a>
+        <a href="login.html" class="login-link"><i class="fa-regular fa-user"></i> Login</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="container">
+        <div class="hero-content">
+          <h1>Features to level up your prep</h1>
+          <p class="subtitle">Everything you need to practice effectively and track progress.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="container features">
+      <h2 class="section-title">Core Features</h2>
+      <div class="card-grid">
+        <article class="card">
+          <i class="fa-solid fa-list-check"></i>
+          <h3>Topic Library</h3>
+          <p>Curated questions across Arrays, Strings, Graphs, DP, Trees, and more.</p>
+        </article>
+        <article class="card">
+          <i class="fa-solid fa-brain"></i>
+          <h3>Adaptive Engine</h3>
+          <p>Adjusts difficulty based on your answers to keep you challenged.</p>
+        </article>
+        <article class="card">
+          <i class="fa-solid fa-lightbulb"></i>
+          <h3>Hints & Explanations</h3>
+          <p>Structured hints and solution breakdowns to reinforce learning.</p>
+        </article>
+        <article class="card">
+          <i class="fa-solid fa-chart-line"></i>
+          <h3>Progress Tracking</h3>
+          <p>Visualize your improvement and identify areas to focus on.</p>
+        </article>
+        <article class="card">
+          <i class="fa-solid fa-clock"></i>
+          <h3>Timed Sessions</h3>
+          <p>Simulate interview pressure with configurable timers.</p>
+        </article>
+        <article class="card">
+          <i class="fa-solid fa-cloud"></i>
+          <h3>Browser-Based</h3>
+          <p>Nothing to install. Practice from any device.</p>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <p>© <span id="year"></span> AI Interviewer. All rights reserved.</p>
+      <div class="footer-links">
+        <a href="about.html">About</a>
+        <a href="services.html">Services</a>
+        <a href="contact.html">Contact</a>
+      </div>
+    </div>
+    <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  </footer>
+</body>
+</html>
+

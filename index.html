@@ -8,39 +8,90 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
-  <div class="container">
-    <header>
-      <h1>AI-Powered Technical Interview Simulator</h1>
-      <p class="subtitle">Practice coding interviews interactively with AI-generated questions.</p>
-      <a href="login.html" class="login-icon" title="Login">
-        <i class="fa-solid fa-user-circle"></i>
-      </a>
-    </header>
+  <header class="site-header">
+    <div class="nav-container">
+      <a href="index.html" class="brand"><i class="fa-solid fa-robot"></i><span>AI Interviewer</span></a>
+      <input type="checkbox" id="nav-toggle" class="nav-toggle" aria-label="Toggle navigation">
+      <label for="nav-toggle" class="nav-toggle-btn"><span></span><span></span><span></span></label>
+      <nav class="site-nav">
+        <a href="index.html" class="active">Home</a>
+        <a href="about.html">About</a>
+        <a href="services.html">Services</a>
+        <a href="contact.html">Contact</a>
+        <a href="login.html" class="login-link"><i class="fa-regular fa-user"></i> Login</a>
+      </nav>
+    </div>
+  </header>
 
-    <main>
-      <section class="demo">
-        <h2>Get Started</h2>
-        <form>
-          <label for="topic">Topic:</label>
-          <select id="topic">
-            <option>Arrays</option>
-            <option>Strings</option>
-            <option>Graphs</option>
-            <option>Dynamic Programming</option>
-            <option>Trees</option>
-          </select>
+  <main>
+    <section class="hero">
+      <div class="container">
+        <div class="hero-content">
+          <h1>Practice Technical Interviews with Confidence</h1>
+          <p class="subtitle">Interactive, AI-generated questions with real-time guidance to help you improve faster.</p>
+          <div class="hero-actions">
+            <a href="services.html" class="btn primary">Explore Features</a>
+            <a href="signup.html" class="btn">Get Started</a>
+          </div>
+        </div>
+      </div>
+    </section>
 
-          <label for="difficulty">Difficulty:</label>
-          <select id="difficulty">
-            <option>Easy</option>
-            <option>Medium</option>
-            <option>Hard</option>
-          </select>
+    <section class="container features">
+      <h2 class="section-title">Why use AI Interviewer?</h2>
+      <div class="card-grid">
+        <article class="card">
+          <i class="fa-solid fa-code"></i>
+          <h3>Topic-Focused Practice</h3>
+          <p>Choose topics like Arrays, Graphs, DP, Trees and practice targeted problems.</p>
+        </article>
+        <article class="card">
+          <i class="fa-solid fa-signal"></i>
+          <h3>Adaptive Difficulty</h3>
+          <p>Start Easy and level up to Medium and Hard as you improve.</p>
+        </article>
+        <article class="card">
+          <i class="fa-regular fa-comments"></i>
+          <h3>Guided Feedback</h3>
+          <p>Receive hints and feedback during practice to learn more effectively.</p>
+        </article>
+      </div>
+    </section>
 
-          <button type="submit">Generate Question</button>
-        </form>
-      </section>
-    </main>
-  </div>
+    <section class="container demo">
+      <h2>Quick Start Demo</h2>
+      <form class="demo-form" onsubmit="return false;">
+        <label for="topic">Topic</label>
+        <select id="topic">
+          <option>Arrays</option>
+          <option>Strings</option>
+          <option>Graphs</option>
+          <option>Dynamic Programming</option>
+          <option>Trees</option>
+        </select>
+
+        <label for="difficulty">Difficulty</label>
+        <select id="difficulty">
+          <option>Easy</option>
+          <option>Medium</option>
+          <option>Hard</option>
+        </select>
+
+        <button type="submit" class="btn primary">Generate Question</button>
+      </form>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <p>© <span id="year"></span> AI Interviewer. All rights reserved.</p>
+      <div class="footer-links">
+        <a href="about.html">About</a>
+        <a href="services.html">Services</a>
+        <a href="contact.html">Contact</a>
+      </div>
+    </div>
+    <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  </footer>
 </body>
 </html>
