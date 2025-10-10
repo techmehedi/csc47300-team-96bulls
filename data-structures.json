@@ -1,0 +1,391 @@
+{
+  "users": {
+    "schema": {
+      "id": "string (UUID)",
+      "email": "string",
+      "username": "string",
+      "password": "string (hashed)",
+      "firstName": "string",
+      "lastName": "string",
+      "profilePicture": "string (URL)",
+      "createdAt": "datetime",
+      "lastLoginAt": "datetime",
+      "isActive": "boolean",
+      "preferences": {
+        "theme": "string (light/dark)",
+        "difficulty": "string (easy/medium/hard)",
+        "topics": "array of strings",
+        "notifications": "boolean",
+        "emailUpdates": "boolean"
+      },
+      "subscription": {
+        "plan": "string (free/premium/pro)",
+        "startDate": "datetime",
+        "endDate": "datetime",
+        "isActive": "boolean"
+      }
+    },
+    "sampleData": [
+      {
+        "id": "user-001",
+        "email": "john.doe@example.com",
+        "username": "johndoe",
+        "firstName": "John",
+        "lastName": "Doe",
+        "createdAt": "2024-01-01T00:00:00Z",
+        "lastLoginAt": "2024-01-15T10:30:00Z",
+        "isActive": true,
+        "preferences": {
+          "theme": "light",
+          "difficulty": "medium",
+          "topics": ["arrays", "strings", "graphs"],
+          "notifications": true,
+          "emailUpdates": true
+        },
+        "subscription": {
+          "plan": "premium",
+          "startDate": "2024-01-01T00:00:00Z",
+          "endDate": "2024-12-31T23:59:59Z",
+          "isActive": true
+        }
+      }
+    ]
+  },
+  "questions": {
+    "schema": {
+      "id": "string (UUID)",
+      "title": "string",
+      "description": "string",
+      "difficulty": "string (easy/medium/hard)",
+      "topic": "string",
+      "constraints": "array of strings",
+      "examples": "array of objects",
+      "testCases": "array of objects",
+      "hints": "array of strings",
+      "solution": "string (code)",
+      "timeComplexity": "string",
+      "spaceComplexity": "string",
+      "tags": "array of strings",
+      "createdAt": "datetime",
+      "updatedAt": "datetime",
+      "isActive": "boolean",
+      "difficultyRating": "number (1-5)",
+      "acceptanceRate": "number (0-1)"
+    },
+    "sampleData": [
+      {
+        "id": "q-001",
+        "title": "Two Sum",
+        "description": "Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target.",
+        "difficulty": "easy",
+        "topic": "arrays",
+        "constraints": [
+          "2 ≤ nums.length ≤ 10⁴",
+          "-10⁹ ≤ nums[i] ≤ 10⁹",
+          "-10⁹ ≤ target ≤ 10⁹",
+          "Only one valid answer exists."
+        ],
+        "examples": [
+          {
+            "input": "nums = [2,7,11,15], target = 9",
+            "output": "[0,1]",
+            "explanation": "Because nums[0] + nums[1] == 9, we return [0, 1]."
+          }
+        ],
+        "testCases": [
+          {
+            "input": "nums = [2,7,11,15], target = 9",
+            "expectedOutput": "[0,1]",
+            "isHidden": false
+          },
+          {
+            "input": "nums = [3,2,4], target = 6",
+            "expectedOutput": "[1,2]",
+            "isHidden": false
+          },
+          {
+            "input": "nums = [3,3], target = 6",
+            "expectedOutput": "[0,1]",
+            "isHidden": true
+          }
+        ],
+        "hints": [
+          "Use a hash map to store numbers and their indices as you iterate through the array.",
+          "For each number, check if its complement (target - number) exists in the hash map."
+        ],
+        "solution": "function twoSum(nums, target) {\n  const map = new Map();\n  for (let i = 0; i < nums.length; i++) {\n    const complement = target - nums[i];\n    if (map.has(complement)) {\n      return [map.get(complement), i];\n    }\n    map.set(nums[i], i);\n  }\n  return [];\n}",
+        "timeComplexity": "O(n)",
+        "spaceComplexity": "O(n)",
+        "tags": ["hash-table", "array", "two-pointers"],
+        "createdAt": "2024-01-01T00:00:00Z",
+        "updatedAt": "2024-01-01T00:00:00Z",
+        "isActive": true,
+        "difficultyRating": 2.1,
+        "acceptanceRate": 0.45
+      }
+    ]
+  },
+  "practiceSessions": {
+    "schema": {
+      "id": "string (UUID)",
+      "userId": "string (UUID)",
+      "sessionType": "string (practice/mock-interview)",
+      "topic": "string",
+      "difficulty": "string",
+      "timeLimit": "number (minutes, 0 for unlimited)",
+      "questions": "array of question IDs",
+      "startTime": "datetime",
+      "endTime": "datetime",
+      "totalTime": "number (seconds)",
+      "status": "string (active/completed/abandoned)",
+      "results": "array of objects",
+      "score": "number (0-100)",
+      "accuracy": "number (0-1)",
+      "createdAt": "datetime"
+    },
+    "sampleData": [
+      {
+        "id": "session-001",
+        "userId": "user-001",
+        "sessionType": "practice",
+        "topic": "arrays",
+        "difficulty": "easy",
+        "timeLimit": 30,
+        "questions": ["q-001", "q-002", "q-003"],
+        "startTime": "2024-01-15T10:00:00Z",
+        "endTime": "2024-01-15T10:25:00Z",
+        "totalTime": 1500,
+        "status": "completed",
+        "results": [
+          {
+            "questionId": "q-001",
+            "isCorrect": true,
+            "timeSpent": 300,
+            "attempts": 1,
+            "hintsUsed": 0,
+            "solution": "function twoSum(nums, target) { ... }"
+          },
+          {
+            "questionId": "q-002",
+            "isCorrect": false,
+            "timeSpent": 600,
+            "attempts": 3,
+            "hintsUsed": 2,
+            "solution": "function maxProfit(prices) { ... }"
+          },
+          {
+            "questionId": "q-003",
+            "isCorrect": true,
+            "timeSpent": 600,
+            "attempts": 2,
+            "hintsUsed": 1,
+            "solution": "function containsDuplicate(nums) { ... }"
+          }
+        ],
+        "score": 67,
+        "accuracy": 0.67,
+        "createdAt": "2024-01-15T10:00:00Z"
+      }
+    ]
+  },
+  "userProgress": {
+    "schema": {
+      "id": "string (UUID)",
+      "userId": "string (UUID)",
+      "topic": "string",
+      "difficulty": "string",
+      "totalAttempted": "number",
+      "totalCorrect": "number",
+      "totalTimeSpent": "number (seconds)",
+      "averageTime": "number (seconds)",
+      "accuracy": "number (0-1)",
+      "streak": "number",
+      "lastPracticed": "datetime",
+      "masteryLevel": "string (beginner/intermediate/advanced/expert)",
+      "weakAreas": "array of strings",
+      "strongAreas": "array of strings",
+      "updatedAt": "datetime"
+    },
+    "sampleData": [
+      {
+        "id": "progress-001",
+        "userId": "user-001",
+        "topic": "arrays",
+        "difficulty": "easy",
+        "totalAttempted": 15,
+        "totalCorrect": 12,
+        "totalTimeSpent": 3600,
+        "averageTime": 240,
+        "accuracy": 0.8,
+        "streak": 5,
+        "lastPracticed": "2024-01-15T10:25:00Z",
+        "masteryLevel": "intermediate",
+        "weakAreas": ["sliding-window", "prefix-sum"],
+        "strongAreas": ["two-pointers", "hash-table"],
+        "updatedAt": "2024-01-15T10:25:00Z"
+      }
+    ]
+  },
+  "achievements": {
+    "schema": {
+      "id": "string (UUID)",
+      "name": "string",
+      "description": "string",
+      "icon": "string (URL)",
+      "category": "string (streak/accuracy/speed/topic)",
+      "criteria": "object",
+      "points": "number",
+      "isActive": "boolean",
+      "createdAt": "datetime"
+    },
+    "sampleData": [
+      {
+        "id": "ach-001",
+        "name": "First Steps",
+        "description": "Complete your first practice session",
+        "icon": "/icons/first-steps.svg",
+        "category": "streak",
+        "criteria": {
+          "type": "sessions_completed",
+          "value": 1
+        },
+        "points": 10,
+        "isActive": true,
+        "createdAt": "2024-01-01T00:00:00Z"
+      },
+      {
+        "id": "ach-002",
+        "name": "Array Master",
+        "description": "Solve 50 array problems correctly",
+        "icon": "/icons/array-master.svg",
+        "category": "topic",
+        "criteria": {
+          "type": "topic_accuracy",
+          "topic": "arrays",
+          "value": 50,
+          "accuracy": 0.8
+        },
+        "points": 100,
+        "isActive": true,
+        "createdAt": "2024-01-01T00:00:00Z"
+      }
+    ]
+  },
+  "userAchievements": {
+    "schema": {
+      "id": "string (UUID)",
+      "userId": "string (UUID)",
+      "achievementId": "string (UUID)",
+      "earnedAt": "datetime",
+      "progress": "number (0-1)"
+    },
+    "sampleData": [
+      {
+        "id": "ua-001",
+        "userId": "user-001",
+        "achievementId": "ach-001",
+        "earnedAt": "2024-01-01T10:00:00Z",
+        "progress": 1.0
+      }
+    ]
+  },
+  "leaderboard": {
+    "schema": {
+      "id": "string (UUID)",
+      "userId": "string (UUID)",
+      "username": "string",
+      "score": "number",
+      "rank": "number",
+      "topic": "string",
+      "difficulty": "string",
+      "period": "string (daily/weekly/monthly/all-time)",
+      "updatedAt": "datetime"
+    },
+    "sampleData": [
+      {
+        "id": "lb-001",
+        "userId": "user-001",
+        "username": "johndoe",
+        "score": 1250,
+        "rank": 1,
+        "topic": "all",
+        "difficulty": "all",
+        "period": "weekly",
+        "updatedAt": "2024-01-15T10:30:00Z"
+      }
+    ]
+  },
+  "notifications": {
+    "schema": {
+      "id": "string (UUID)",
+      "userId": "string (UUID)",
+      "type": "string (achievement/reminder/streak/progress)",
+      "title": "string",
+      "message": "string",
+      "isRead": "boolean",
+      "createdAt": "datetime",
+      "expiresAt": "datetime"
+    },
+    "sampleData": [
+      {
+        "id": "notif-001",
+        "userId": "user-001",
+        "type": "achievement",
+        "title": "Achievement Unlocked!",
+        "message": "You've earned the 'First Steps' achievement!",
+        "isRead": false,
+        "createdAt": "2024-01-01T10:00:00Z",
+        "expiresAt": "2024-01-08T10:00:00Z"
+      }
+    ]
+  },
+  "feedback": {
+    "schema": {
+      "id": "string (UUID)",
+      "userId": "string (UUID)",
+      "questionId": "string (UUID)",
+      "rating": "number (1-5)",
+      "comment": "string",
+      "difficulty": "string (too-easy/just-right/too-hard)",
+      "clarity": "string (clear/unclear)",
+      "createdAt": "datetime"
+    },
+    "sampleData": [
+      {
+        "id": "fb-001",
+        "userId": "user-001",
+        "questionId": "q-001",
+        "rating": 4,
+        "comment": "Great problem! The examples were very helpful.",
+        "difficulty": "just-right",
+        "clarity": "clear",
+        "createdAt": "2024-01-15T10:30:00Z"
+      }
+    ]
+  },
+  "systemSettings": {
+    "schema": {
+      "id": "string (UUID)",
+      "key": "string",
+      "value": "any",
+      "description": "string",
+      "updatedAt": "datetime"
+    },
+    "sampleData": [
+      {
+        "id": "sys-001",
+        "key": "default_session_time",
+        "value": 30,
+        "description": "Default practice session time limit in minutes",
+        "updatedAt": "2024-01-01T00:00:00Z"
+      },
+      {
+        "id": "sys-002",
+        "key": "max_questions_per_session",
+        "value": 10,
+        "description": "Maximum number of questions per practice session",
+        "updatedAt": "2024-01-01T00:00:00Z"
+      }
+    ]
+  }
+}
