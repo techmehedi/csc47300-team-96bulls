@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard • AI Interviewer</title>
+  <link rel="stylesheet" href="main.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="nav-container">
+      <a href="index.html" class="brand"><i class="fa-solid fa-robot"></i><span>AI Interviewer</span></a>
+      <input type="checkbox" id="nav-toggle" class="nav-toggle" aria-label="Toggle navigation">
+      <label for="nav-toggle" class="nav-toggle-btn"><span></span><span></span><span></span></label>
+      <nav class="site-nav">
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="services.html">Services</a>
+        <a href="contact.html">Contact</a>
+        <a href="dashboard.html" class="active">Dashboard</a>
+        <a href="practice.html" class="btn primary">Practice</a>
+        <a href="login.html" class="login-link"><i class="fa-regular fa-user"></i> Profile</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="container">
+        <div class="hero-content">
+          <h1>Your Progress Dashboard</h1>
+          <p class="subtitle">Track your interview preparation journey and see how you're improving.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="container">
+      <div class="dashboard-grid">
+        <!-- Stats Cards -->
+        <div class="stats-section">
+          <h2 class="section-title">Your Stats</h2>
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon">
+                <i class="fa-solid fa-fire"></i>
+              </div>
+              <div class="stat-content">
+                <h3 id="streakCount">7</h3>
+                <p>Day Streak</p>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">
+                <i class="fa-solid fa-check-circle"></i>
+              </div>
+              <div class="stat-content">
+                <h3 id="totalSolved">42</h3>
+                <p>Problems Solved</p>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">
+                <i class="fa-solid fa-clock"></i>
+              </div>
+              <div class="stat-content">
+                <h3 id="totalTime">12h 34m</h3>
+                <p>Time Practiced</p>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">
+                <i class="fa-solid fa-trophy"></i>
+              </div>
+              <div class="stat-content">
+                <h3 id="accuracy">78%</h3>
+                <p>Accuracy</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Progress Chart -->
+        <div class="chart-section">
+          <h2 class="section-title">Progress Over Time</h2>
+          <div class="chart-container">
+            <canvas id="progressChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Topic Performance -->
+        <div class="topics-section">
+          <h2 class="section-title">Topic Performance</h2>
+          <div class="topics-grid">
+            <div class="topic-card" data-topic="arrays">
+              <div class="topic-header">
+                <h3><i class="fa-solid fa-list"></i> Arrays</h3>
+                <span class="topic-score">85%</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 85%"></div>
+              </div>
+              <div class="topic-stats">
+                <span>12 solved</span>
+                <span>2 failed</span>
+              </div>
+            </div>
+            <div class="topic-card" data-topic="strings">
+              <div class="topic-header">
+                <h3><i class="fa-solid fa-font"></i> Strings</h3>
+                <span class="topic-score">72%</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 72%"></div>
+              </div>
+              <div class="topic-stats">
+                <span>8 solved</span>
+                <span>3 failed</span>
+              </div>
+            </div>
+            <div class="topic-card" data-topic="graphs">
+              <div class="topic-header">
+                <h3><i class="fa-solid fa-project-diagram"></i> Graphs</h3>
+                <span class="topic-score">65%</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 65%"></div>
+              </div>
+              <div class="topic-stats">
+                <span>6 solved</span>
+                <span>3 failed</span>
+              </div>
+            </div>
+            <div class="topic-card" data-topic="dynamic-programming">
+              <div class="topic-header">
+                <h3><i class="fa-solid fa-brain"></i> Dynamic Programming</h3>
+                <span class="topic-score">58%</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 58%"></div>
+              </div>
+              <div class="topic-stats">
+                <span>5 solved</span>
+                <span>4 failed</span>
+              </div>
+            </div>
+            <div class="topic-card" data-topic="trees">
+              <div class="topic-header">
+                <h3><i class="fa-solid fa-sitemap"></i> Trees</h3>
+                <span class="topic-score">80%</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 80%"></div>
+              </div>
+              <div class="topic-stats">
+                <span>11 solved</span>
+                <span>3 failed</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="activity-section">
+          <h2 class="section-title">Recent Activity</h2>
+          <div class="activity-list" id="activityList">
+            <!-- Activity items will be populated by JavaScript -->
+          </div>
+        </div>
+
+        <!-- Goals -->
+        <div class="goals-section">
+          <h2 class="section-title">Your Goals</h2>
+          <div class="goals-list">
+            <div class="goal-item">
+              <div class="goal-content">
+                <h4>Solve 50 Problems</h4>
+                <p>You're 84% of the way there!</p>
+              </div>
+              <div class="goal-progress">
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width: 84%"></div>
+                </div>
+                <span>42/50</span>
+              </div>
+            </div>
+            <div class="goal-item">
+              <div class="goal-content">
+                <h4>Maintain 7-Day Streak</h4>
+                <p>Keep it up! You're on day 7.</p>
+              </div>
+              <div class="goal-progress">
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width: 100%"></div>
+                </div>
+                <span>7/7</span>
+              </div>
+            </div>
+            <div class="goal-item">
+              <div class="goal-content">
+                <h4>Master Dynamic Programming</h4>
+                <p>Focus on this topic to improve your score.</p>
+              </div>
+              <div class="goal-progress">
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width: 58%"></div>
+                </div>
+                <span>58%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <p>© <span id="year"></span> AI Interviewer. All rights reserved.</p>
+      <div class="footer-links">
+        <a href="about.html">About</a>
+        <a href="services.html">Services</a>
+        <a href="contact.html">Contact</a>
+      </div>
+    </div>
+    <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  </footer>
+  <script src="dashboard.js"></script>
+</body>
+</html>
