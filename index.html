@@ -60,25 +60,55 @@
 
     <section class="container demo">
       <h2>Quick Start Demo</h2>
-      <form class="demo-form" onsubmit="return false;">
+      <form class="demo-form" id="demoForm">
         <label for="topic">Topic</label>
         <select id="topic">
-          <option>Arrays</option>
-          <option>Strings</option>
-          <option>Graphs</option>
-          <option>Dynamic Programming</option>
-          <option>Trees</option>
+          <option value="arrays">Arrays</option>
+          <option value="strings">Strings</option>
+          <option value="graphs">Graphs</option>
+          <option value="dynamic-programming">Dynamic Programming</option>
+          <option value="trees">Trees</option>
         </select>
 
         <label for="difficulty">Difficulty</label>
         <select id="difficulty">
-          <option>Easy</option>
-          <option>Medium</option>
-          <option>Hard</option>
+          <option value="easy">Easy</option>
+          <option value="medium">Medium</option>
+          <option value="hard">Hard</option>
         </select>
 
         <button type="submit" class="btn primary">Generate Question</button>
       </form>
+      
+      <div id="questionDisplay" class="question-display" style="display: none;">
+        <div class="question-header">
+          <h3 id="questionTitle"></h3>
+          <div class="question-meta">
+            <span id="questionTopic" class="topic-badge"></span>
+            <span id="questionDifficulty" class="difficulty-badge"></span>
+          </div>
+        </div>
+        <div class="question-content">
+          <p id="questionDescription"></p>
+          <div class="question-example">
+            <h4>Example:</h4>
+            <pre id="questionExample"></pre>
+          </div>
+        </div>
+        <div class="question-actions">
+          <button id="showHint" class="btn">Get Hint</button>
+          <button id="showSolution" class="btn">Show Solution</button>
+          <button id="newQuestion" class="btn primary">New Question</button>
+        </div>
+        <div id="hintDisplay" class="hint-display" style="display: none;">
+          <h4>Hint:</h4>
+          <p id="hintText"></p>
+        </div>
+        <div id="solutionDisplay" class="solution-display" style="display: none;">
+          <h4>Solution:</h4>
+          <pre id="solutionText"></pre>
+        </div>
+      </div>
     </section>
   </main>
 
@@ -93,5 +123,6 @@
     </div>
     <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
   </footer>
+  <script src="demo.js"></script>
 </body>
 </html>
