@@ -3,17 +3,204 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign Up</title>
+    <title>Sign Up • AI Interviewer</title>
     <link rel="stylesheet" href="main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
-    <div class="container" style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
-        <h1>Sign Up</h1>
-        <input type="text" id="email" name="email" placeholder="Email: " />
-        <input type="text" id="username" name="username" placeholder="Username: " />
-        <input type="text" id="password" name="password" placeholder="Password: " />
-        <button style="margin: 10px;">Login</button>
-        <p>Already a member? <a href="login.html">Log In</p>
-    </div>
+    <header class="site-header">
+        <div class="nav-container">
+            <a href="index.html" class="brand"><i class="fa-solid fa-robot"></i><span>AI Interviewer</span></a>
+            <input type="checkbox" id="nav-toggle" class="nav-toggle" aria-label="Toggle navigation">
+            <label for="nav-toggle" class="nav-toggle-btn"><span></span><span></span><span></span></label>
+            <nav class="site-nav">
+                <a href="index.html">Home</a>
+                <a href="about.html">About</a>
+                <a href="services.html">Services</a>
+                <a href="contact.html">Contact</a>
+                <a href="dashboard.html">Dashboard</a>
+                <a href="practice.html">Practice</a>
+                <a href="login.html" class="login-link"><i class="fa-regular fa-user"></i> Login</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="container">
+                <div class="hero-content">
+                    <h1>Join AI Interviewer</h1>
+                    <p class="subtitle">Start your journey to interview success today.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="container">
+            <div class="auth-container">
+                <div class="auth-form-container">
+                    <div class="auth-header">
+                        <h2>Create Account</h2>
+                        <p>Sign up to get started with personalized interview practice</p>
+                    </div>
+                    
+                    <form class="auth-form" id="signupForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="firstName">First Name</label>
+                                <div class="input-group">
+                                    <i class="fa-solid fa-user input-icon"></i>
+                                    <input type="text" id="firstName" name="firstName" placeholder="First name" required>
+                                </div>
+                                <div class="error-message" id="firstNameError"></div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="lastName">Last Name</label>
+                                <div class="input-group">
+                                    <i class="fa-solid fa-user input-icon"></i>
+                                    <input type="text" id="lastName" name="lastName" placeholder="Last name" required>
+                                </div>
+                                <div class="error-message" id="lastNameError"></div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email">Email Address</label>
+                            <div class="input-group">
+                                <i class="fa-solid fa-envelope input-icon"></i>
+                                <input type="email" id="email" name="email" placeholder="Enter your email" required>
+                            </div>
+                            <div class="error-message" id="emailError"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="username">Username</label>
+                            <div class="input-group">
+                                <i class="fa-solid fa-at input-icon"></i>
+                                <input type="text" id="username" name="username" placeholder="Choose a username" required>
+                            </div>
+                            <div class="error-message" id="usernameError"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <div class="input-group">
+                                <i class="fa-solid fa-lock input-icon"></i>
+                                <input type="password" id="password" name="password" placeholder="Create a password" required>
+                                <button type="button" class="password-toggle" id="passwordToggle">
+                                    <i class="fa-solid fa-eye"></i>
+                                </button>
+                            </div>
+                            <div class="password-strength" id="passwordStrength">
+                                <div class="strength-bar">
+                                    <div class="strength-fill" id="strengthFill"></div>
+                                </div>
+                                <span class="strength-text" id="strengthText">Password strength</span>
+                            </div>
+                            <div class="error-message" id="passwordError"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="confirmPassword">Confirm Password</label>
+                            <div class="input-group">
+                                <i class="fa-solid fa-lock input-icon"></i>
+                                <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm your password" required>
+                                <button type="button" class="password-toggle" id="confirmPasswordToggle">
+                                    <i class="fa-solid fa-eye"></i>
+                                </button>
+                            </div>
+                            <div class="error-message" id="confirmPasswordError"></div>
+                        </div>
+
+                        <div class="form-options">
+                            <label class="checkbox-container">
+                                <input type="checkbox" id="agreeTerms" required>
+                                <span class="checkmark"></span>
+                                I agree to the <a href="#" class="terms-link">Terms of Service</a> and <a href="#" class="terms-link">Privacy Policy</a>
+                            </label>
+                        </div>
+
+                        <div class="form-options">
+                            <label class="checkbox-container">
+                                <input type="checkbox" id="emailUpdates">
+                                <span class="checkmark"></span>
+                                Send me updates and tips via email
+                            </label>
+                        </div>
+
+                        <button type="submit" class="btn primary large" id="signupBtn">
+                            <span class="btn-text">Create Account</span>
+                            <i class="fa-solid fa-spinner fa-spin btn-spinner" style="display: none;"></i>
+                        </button>
+
+                        <div class="auth-divider">
+                            <span>or</span>
+                        </div>
+
+                        <button type="button" class="btn social-btn google-btn">
+                            <i class="fa-brands fa-google"></i>
+                            Continue with Google
+                        </button>
+
+                        <button type="button" class="btn social-btn github-btn">
+                            <i class="fa-brands fa-github"></i>
+                            Continue with GitHub
+                        </button>
+                    </form>
+
+                    <div class="auth-footer">
+                        <p>Already have an account? <a href="login.html">Sign in here</a></p>
+                    </div>
+                </div>
+
+                <div class="auth-features">
+                    <h3>What you'll get:</h3>
+                    <div class="feature-list">
+                        <div class="feature-item">
+                            <i class="fa-solid fa-brain"></i>
+                            <div>
+                                <h4>AI-Powered Practice</h4>
+                                <p>Get personalized questions based on your skill level</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fa-solid fa-clock"></i>
+                            <div>
+                                <h4>Flexible Scheduling</h4>
+                                <p>Practice anytime, anywhere with our browser-based platform</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fa-solid fa-lightbulb"></i>
+                            <div>
+                                <h4>Smart Hints</h4>
+                                <p>Get helpful hints and detailed explanations for every problem</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fa-solid fa-chart-bar"></i>
+                            <div>
+                                <h4>Progress Analytics</h4>
+                                <p>Track your improvement with detailed performance metrics</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container footer-inner">
+            <p>© <span id="year"></span> AI Interviewer. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="about.html">About</a>
+                <a href="services.html">Services</a>
+                <a href="contact.html">Contact</a>
+            </div>
+        </div>
+        <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+    </footer>
+    <script src="auth.js"></script>
 </body>
 </html>
