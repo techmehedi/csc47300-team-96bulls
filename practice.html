@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Practice Session • AI Interviewer</title>
+  <link rel="stylesheet" href="main.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="nav-container">
+      <a href="index.html" class="brand"><i class="fa-solid fa-robot"></i><span>AI Interviewer</span></a>
+      <input type="checkbox" id="nav-toggle" class="nav-toggle" aria-label="Toggle navigation">
+      <label for="nav-toggle" class="nav-toggle-btn"><span></span><span></span><span></span></label>
+      <nav class="site-nav">
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="services.html">Services</a>
+        <a href="contact.html">Contact</a>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="practice.html" class="active">Practice</a>
+        <a href="login.html" class="login-link"><i class="fa-regular fa-user"></i> Profile</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="container">
+        <div class="hero-content">
+          <h1>Practice Session</h1>
+          <p class="subtitle">Choose your practice settings and start solving problems.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Session Setup -->
+    <section class="container" id="sessionSetup">
+      <div class="session-setup">
+        <h2 class="section-title">Configure Your Practice Session</h2>
+        <form class="session-form" id="sessionForm">
+          <div class="form-group">
+            <label for="sessionTopic">Topic</label>
+            <select id="sessionTopic" required>
+              <option value="">Select a topic</option>
+              <option value="arrays">Arrays</option>
+              <option value="strings">Strings</option>
+              <option value="graphs">Graphs</option>
+              <option value="dynamic-programming">Dynamic Programming</option>
+              <option value="trees">Trees</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="sessionDifficulty">Difficulty</label>
+            <select id="sessionDifficulty" required>
+              <option value="">Select difficulty</option>
+              <option value="easy">Easy</option>
+              <option value="medium">Medium</option>
+              <option value="hard">Hard</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="sessionTime">Time Limit (minutes)</label>
+            <select id="sessionTime" required>
+              <option value="15">15 minutes</option>
+              <option value="30" selected>30 minutes</option>
+              <option value="45">45 minutes</option>
+              <option value="60">60 minutes</option>
+              <option value="0">No limit</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="sessionQuestions">Number of Questions</label>
+            <select id="sessionQuestions" required>
+              <option value="1">1 question</option>
+              <option value="3" selected>3 questions</option>
+              <option value="5">5 questions</option>
+              <option value="10">10 questions</option>
+            </select>
+          </div>
+
+          <button type="submit" class="btn primary large">Start Practice Session</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- Practice Session -->
+    <section class="container" id="practiceSession" style="display: none;">
+      <div class="session-header">
+        <div class="session-info">
+          <h2 id="sessionTitle">Practice Session</h2>
+          <div class="session-meta">
+            <span id="sessionTopicDisplay"></span>
+            <span id="sessionDifficultyDisplay"></span>
+            <span id="sessionProgress">Question 1 of 3</span>
+          </div>
+        </div>
+        <div class="session-timer">
+          <div class="timer-display" id="timerDisplay">30:00</div>
+          <div class="timer-controls">
+            <button id="pauseBtn" class="btn small"><i class="fa-solid fa-pause"></i></button>
+            <button id="stopBtn" class="btn small danger"><i class="fa-solid fa-stop"></i></button>
+          </div>
+        </div>
+      </div>
+
+      <div class="question-container">
+        <div class="question-header">
+          <h3 id="currentQuestionTitle">Two Sum</h3>
+          <div class="question-meta">
+            <span id="currentQuestionTopic" class="topic-badge">Arrays</span>
+            <span id="currentQuestionDifficulty" class="difficulty-badge">Easy</span>
+          </div>
+        </div>
+        
+        <div class="question-content">
+          <p id="currentQuestionDescription">Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target.</p>
+          
+          <div class="question-example">
+            <h4>Example:</h4>
+            <pre id="currentQuestionExample">Input: nums = [2,7,11,15], target = 9
+Output: [0,1]
+Explanation: Because nums[0] + nums[1] == 9, we return [0, 1].</pre>
+          </div>
+
+          <div class="question-constraints">
+            <h4>Constraints:</h4>
+            <ul id="currentQuestionConstraints">
+              <li>2 ≤ nums.length ≤ 10⁴</li>
+              <li>-10⁹ ≤ nums[i] ≤ 10⁹</li>
+              <li>-10⁹ ≤ target ≤ 10⁹</li>
+              <li>Only one valid answer exists.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="solution-area">
+          <h4>Your Solution:</h4>
+          <div class="code-editor">
+            <textarea id="codeInput" placeholder="Write your solution here...">function twoSum(nums, target) {
+    // Your code here
+    
+}</textarea>
+          </div>
+          <div class="solution-actions">
+            <button id="runCodeBtn" class="btn">Run Code</button>
+            <button id="submitSolutionBtn" class="btn primary">Submit Solution</button>
+            <button id="getHintBtn" class="btn">Get Hint</button>
+            <button id="showSolutionBtn" class="btn">Show Solution</button>
+          </div>
+        </div>
+
+        <div id="hintDisplay" class="hint-display" style="display: none;">
+          <h4>Hint:</h4>
+          <p id="hintText">Use a hash map to store numbers and their indices as you iterate through the array.</p>
+        </div>
+
+        <div id="solutionDisplay" class="solution-display" style="display: none;">
+          <h4>Solution:</h4>
+          <pre id="solutionText">function twoSum(nums, target) {
+    const map = new Map();
+    for (let i = 0; i < nums.length; i++) {
+        const complement = target - nums[i];
+        if (map.has(complement)) {
+            return [map.get(complement), i];
+        }
+        map.set(nums[i], i);
+    }
+    return [];
+}</pre>
+        </div>
+
+        <div id="resultDisplay" class="result-display" style="display: none;">
+          <div class="result-content">
+            <div class="result-icon">
+              <i id="resultIcon" class="fa-solid fa-check-circle"></i>
+            </div>
+            <div class="result-text">
+              <h4 id="resultTitle">Correct!</h4>
+              <p id="resultMessage">Great job! Your solution passed all test cases.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="session-actions">
+        <button id="nextQuestionBtn" class="btn primary" style="display: none;">Next Question</button>
+        <button id="endSessionBtn" class="btn danger" style="display: none;">End Session</button>
+      </div>
+    </section>
+
+    <!-- Session Results -->
+    <section class="container" id="sessionResults" style="display: none;">
+      <div class="results-container">
+        <h2 class="section-title">Session Complete!</h2>
+        <div class="results-summary">
+          <div class="result-stat">
+            <h3 id="totalQuestions">3</h3>
+            <p>Questions Attempted</p>
+          </div>
+          <div class="result-stat">
+            <h3 id="correctAnswers">2</h3>
+            <p>Correct Answers</p>
+          </div>
+          <div class="result-stat">
+            <h3 id="sessionAccuracy">67%</h3>
+            <p>Accuracy</p>
+          </div>
+          <div class="result-stat">
+            <h3 id="totalTime">18:45</h3>
+            <p>Time Spent</p>
+          </div>
+        </div>
+
+        <div class="detailed-results">
+          <h3>Question Breakdown</h3>
+          <div id="questionBreakdown" class="question-breakdown">
+            <!-- Results will be populated by JavaScript -->
+          </div>
+        </div>
+
+        <div class="results-actions">
+          <button id="newSessionBtn" class="btn primary">Start New Session</button>
+          <a href="dashboard.html" class="btn">View Dashboard</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <p>© <span id="year"></span> AI Interviewer. All rights reserved.</p>
+      <div class="footer-links">
+        <a href="about.html">About</a>
+        <a href="services.html">Services</a>
+        <a href="contact.html">Contact</a>
+      </div>
+    </div>
+    <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  </footer>
+  <script src="practice.js"></script>
+</body>
+</html>
