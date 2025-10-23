@@ -1,0 +1,55 @@
+{
+  "userProgress": [
+    {
+      "id": "progress-001",
+      "userId": "user-001",
+      "topic": "arrays",
+      "difficulty": "easy",
+      "totalAttempted": 15,
+      "totalCorrect": 12,
+      "totalTimeSpent": 3600,
+      "averageTime": 240,
+      "accuracy": 0.8,
+      "streak": 5,
+      "lastPracticed": "2024-01-15T10:25:00Z",
+      "masteryLevel": "intermediate",
+      "weakAreas": ["sliding-window", "prefix-sum"],
+      "strongAreas": ["two-pointers", "hash-table"],
+      "updatedAt": "2024-01-15T10:25:00Z"
+    },
+    {
+      "id": "progress-002",
+      "userId": "user-001",
+      "topic": "strings",
+      "difficulty": "medium",
+      "totalAttempted": 8,
+      "totalCorrect": 6,
+      "totalTimeSpent": 2400,
+      "averageTime": 300,
+      "accuracy": 0.75,
+      "streak": 3,
+      "lastPracticed": "2024-01-14T14:35:00Z",
+      "masteryLevel": "intermediate",
+      "weakAreas": ["regex", "string-manipulation"],
+      "strongAreas": ["two-pointers", "sliding-window"],
+      "updatedAt": "2024-01-14T14:35:00Z"
+    },
+    {
+      "id": "progress-003",
+      "userId": "user-001",
+      "topic": "graphs",
+      "difficulty": "hard",
+      "totalAttempted": 5,
+      "totalCorrect": 2,
+      "totalTimeSpent": 1800,
+      "averageTime": 360,
+      "accuracy": 0.4,
+      "streak": 1,
+      "lastPracticed": "2024-01-13T16:20:00Z",
+      "masteryLevel": "beginner",
+      "weakAreas": ["topological-sort", "shortest-path"],
+      "strongAreas": ["dfs", "bfs"],
+      "updatedAt": "2024-01-13T16:20:00Z"
+    }
+  ]
+}

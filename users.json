@@ -1,0 +1,54 @@
+{
+  "users": [
+    {
+      "id": "user-001",
+      "email": "john.doe@example.com",
+      "username": "johndoe",
+      "password": "hashed_password_123",
+      "firstName": "John",
+      "lastName": "Doe",
+      "profilePicture": "",
+      "createdAt": "2024-01-01T00:00:00Z",
+      "lastLoginAt": "2024-01-15T10:30:00Z",
+      "isActive": true,
+      "preferences": {
+        "theme": "light",
+        "difficulty": "medium",
+        "topics": ["arrays", "strings", "graphs"],
+        "notifications": true,
+        "emailUpdates": true
+      },
+      "subscription": {
+        "plan": "premium",
+        "startDate": "2024-01-01T00:00:00Z",
+        "endDate": "2024-12-31T23:59:59Z",
+        "isActive": true
+      }
+    },
+    {
+      "id": "user-002",
+      "email": "jane.smith@example.com",
+      "username": "janesmith",
+      "password": "hashed_password_456",
+      "firstName": "Jane",
+      "lastName": "Smith",
+      "profilePicture": "",
+      "createdAt": "2024-01-05T00:00:00Z",
+      "lastLoginAt": "2024-01-14T15:20:00Z",
+      "isActive": true,
+      "preferences": {
+        "theme": "dark",
+        "difficulty": "hard",
+        "topics": ["dynamic-programming", "trees"],
+        "notifications": true,
+        "emailUpdates": false
+      },
+      "subscription": {
+        "plan": "free",
+        "startDate": "2024-01-05T00:00:00Z",
+        "endDate": null,
+        "isActive": true
+      }
+    }
+  ]
+}

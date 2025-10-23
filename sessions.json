@@ -1,0 +1,80 @@
+{
+  "sessions": [
+    {
+      "id": "session-001",
+      "userId": "user-001",
+      "sessionType": "practice",
+      "topic": "arrays",
+      "difficulty": "easy",
+      "timeLimit": 30,
+      "questions": ["q-001", "q-002", "q-003"],
+      "startTime": "2024-01-15T10:00:00Z",
+      "endTime": "2024-01-15T10:25:00Z",
+      "totalTime": 1500,
+      "status": "completed",
+      "results": [
+        {
+          "questionId": "q-001",
+          "isCorrect": true,
+          "timeSpent": 300,
+          "attempts": 1,
+          "hintsUsed": 0,
+          "solution": "function twoSum(nums, target) { const map = new Map(); for (let i = 0; i < nums.length; i++) { const complement = target - nums[i]; if (map.has(complement)) { return [map.get(complement), i]; } map.set(nums[i], i); } return []; }"
+        },
+        {
+          "questionId": "q-002",
+          "isCorrect": false,
+          "timeSpent": 600,
+          "attempts": 3,
+          "hintsUsed": 2,
+          "solution": "function maxProfit(prices) { let minPrice = prices[0]; let maxProfit = 0; for (let i = 1; i < prices.length; i++) { if (prices[i] < minPrice) { minPrice = prices[i]; } else { maxProfit = Math.max(maxProfit, prices[i] - minPrice); } } return maxProfit; }"
+        },
+        {
+          "questionId": "q-003",
+          "isCorrect": true,
+          "timeSpent": 600,
+          "attempts": 2,
+          "hintsUsed": 1,
+          "solution": "function containsDuplicate(nums) { const set = new Set(); for (let num of nums) { if (set.has(num)) return true; set.add(num); } return false; }"
+        }
+      ],
+      "score": 67,
+      "accuracy": 0.67,
+      "createdAt": "2024-01-15T10:00:00Z"
+    },
+    {
+      "id": "session-002",
+      "userId": "user-001",
+      "sessionType": "practice",
+      "topic": "strings",
+      "difficulty": "medium",
+      "timeLimit": 45,
+      "questions": ["q-004", "q-005"],
+      "startTime": "2024-01-14T14:00:00Z",
+      "endTime": "2024-01-14T14:35:00Z",
+      "totalTime": 2100,
+      "status": "completed",
+      "results": [
+        {
+          "questionId": "q-004",
+          "isCorrect": true,
+          "timeSpent": 1200,
+          "attempts": 1,
+          "hintsUsed": 0,
+          "solution": "function lengthOfLongestSubstring(s) { const charSet = new Set(); let left = 0; let maxLength = 0; for (let right = 0; right < s.length; right++) { while (charSet.has(s[right])) { charSet.delete(s[left]); left++; } charSet.add(s[right]); maxLength = Math.max(maxLength, right - left + 1); } return maxLength; }"
+        },
+        {
+          "questionId": "q-005",
+          "isCorrect": true,
+          "timeSpent": 900,
+          "attempts": 1,
+          "hintsUsed": 0,
+          "solution": "function isValid(s) { const stack = []; const map = { ')': '(', '}': '{', ']': '[' }; for (let char of s) { if (char in map) { if (stack.length === 0 || stack.pop() !== map[char]) { return false; } } else { stack.push(char); } } return stack.length === 0; }"
+        }
+      ],
+      "score": 100,
+      "accuracy": 1.0,
+      "createdAt": "2024-01-14T14:00:00Z"
+    }
+  ]
+}

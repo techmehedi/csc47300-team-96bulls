@@ -1,319 +1,325 @@
-// Authentication Manager
-class AuthManager {
+// Authentication System for AI Interviewer
+class AuthenticationSystem {
   constructor() {
-    this.isLoginPage = window.location.pathname.includes('login.html');
-    this.isSignupPage = window.location.pathname.includes('signup.html');
+    this.backend = new BackendSimulator();
+    this.currentUser = null;
     this.initializeEventListeners();
-    this.initializePasswordStrength();
+    this.checkExistingSession();
   }
 
   initializeEventListeners() {
-    if (this.isLoginPage) {
-      this.initializeLoginForm();
-    } else if (this.isSignupPage) {
-      this.initializeSignupForm();
+    // Login form
+    const loginForm = document.getElementById('loginForm');
+    if (loginForm) {
+      loginForm.addEventListener('submit', (e) => this.handleLogin(e));
+    }
+
+    // Signup form
+    const signupForm = document.getElementById('signupForm');
+    if (signupForm) {
+      signupForm.addEventListener('submit', (e) => this.handleSignup(e));
+    }
+
+    // Password toggle functionality
+    this.initializePasswordToggles();
+    
+    // Password strength checking
+    this.initializePasswordStrength();
+    
+    // Form validation
+    this.initializeFormValidation();
+  }
+
+  async checkExistingSession() {
+    const userData = localStorage.getItem('ai_interviewer_user');
+    if (userData) {
+      this.currentUser = JSON.parse(userData);
+      this.updateNavigationForLoggedInUser();
     }
   }
 
-  initializeLoginForm() {
-    const form = document.getElementById('loginForm');
-    const passwordToggle = document.getElementById('passwordToggle');
-    const emailInput = document.getElementById('email');
-    const passwordInput = document.getElementById('password');
-
-    form.addEventListener('submit', (e) => {
-      e.preventDefault();
-      this.handleLogin();
+  updateNavigationForLoggedInUser() {
+    const loginLinks = document.querySelectorAll('.login-link');
+    loginLinks.forEach(link => {
+      link.innerHTML = `<i class="fa-regular fa-user"></i> ${this.currentUser.firstName}`;
+      link.href = 'dashboard.html';
     });
-
-    passwordToggle.addEventListener('click', () => {
-      this.togglePasswordVisibility('password', passwordToggle);
-    });
-
-    // Real-time validation
-    emailInput.addEventListener('blur', () => this.validateEmail(emailInput.value));
-    passwordInput.addEventListener('blur', () => this.validatePassword(passwordInput.value));
   }
 
-  initializeSignupForm() {
-    const form = document.getElementById('signupForm');
-    const passwordToggle = document.getElementById('passwordToggle');
-    const confirmPasswordToggle = document.getElementById('confirmPasswordToggle');
-    const passwordInput = document.getElementById('password');
-    const confirmPasswordInput = document.getElementById('confirmPassword');
-
-    form.addEventListener('submit', (e) => {
-      e.preventDefault();
-      this.handleSignup();
-    });
-
-    passwordToggle.addEventListener('click', () => {
-      this.togglePasswordVisibility('password', passwordToggle);
-    });
-
-    confirmPasswordToggle.addEventListener('click', () => {
-      this.togglePasswordVisibility('confirmPassword', confirmPasswordToggle);
-    });
-
-    // Real-time validation
-    document.getElementById('firstName').addEventListener('blur', (e) => this.validateName(e.target.value, 'firstName'));
-    document.getElementById('lastName').addEventListener('blur', (e) => this.validateName(e.target.value, 'lastName'));
-    document.getElementById('email').addEventListener('blur', (e) => this.validateEmail(e.target.value));
-    document.getElementById('username').addEventListener('blur', (e) => this.validateUsername(e.target.value));
-    passwordInput.addEventListener('input', (e) => this.updatePasswordStrength(e.target.value));
-    passwordInput.addEventListener('blur', (e) => this.validatePassword(e.target.value));
-    confirmPasswordInput.addEventListener('blur', (e) => this.validateConfirmPassword(e.target.value));
-  }
-
-  initializePasswordStrength() {
-    if (this.isSignupPage) {
-      const passwordInput = document.getElementById('password');
-      passwordInput.addEventListener('input', (e) => {
-        this.updatePasswordStrength(e.target.value);
-      });
-    }
-  }
-
-  togglePasswordVisibility(inputId, toggleButton) {
-    const input = document.getElementById(inputId);
-    const icon = toggleButton.querySelector('i');
-    
-    if (input.type === 'password') {
-      input.type = 'text';
-      icon.className = 'fa-solid fa-eye-slash';
-    } else {
-      input.type = 'password';
-      icon.className = 'fa-solid fa-eye';
-    }
-  }
-
-  updatePasswordStrength(password) {
-    const strengthFill = document.getElementById('strengthFill');
-    const strengthText = document.getElementById('strengthText');
-    
-    if (!strengthFill || !strengthText) return;
-
-    const strength = this.calculatePasswordStrength(password);
-    const percentage = strength.score * 20; // Convert to percentage
-    
-    strengthFill.style.width = `${percentage}%`;
-    strengthFill.className = `strength-fill ${strength.level}`;
-    strengthText.textContent = strength.text;
-    strengthText.className = `strength-text ${strength.level}`;
-  }
-
-  calculatePasswordStrength(password) {
-    let score = 0;
-    let feedback = [];
-
-    if (password.length >= 8) score++;
-    else feedback.push('at least 8 characters');
-
-    if (/[a-z]/.test(password)) score++;
-    else feedback.push('lowercase letters');
-
-    if (/[A-Z]/.test(password)) score++;
-    else feedback.push('uppercase letters');
-
-    if (/[0-9]/.test(password)) score++;
-    else feedback.push('numbers');
-
-    if (/[^A-Za-z0-9]/.test(password)) score++;
-    else feedback.push('special characters');
-
-    const levels = {
-      0: { level: 'very-weak', text: 'Very weak' },
-      1: { level: 'weak', text: 'Weak' },
-      2: { level: 'fair', text: 'Fair' },
-      3: { level: 'good', text: 'Good' },
-      4: { level: 'strong', text: 'Strong' },
-      5: { level: 'very-strong', text: 'Very strong' }
-    };
-
-    return {
-      score,
-      level: levels[score].level,
-      text: levels[score].text,
-      feedback
-    };
-  }
-
-  validateName(name, fieldId) {
-    const errorElement = document.getElementById(`${fieldId}Error`);
-    const isValid = name.trim().length >= 2 && /^[a-zA-Z\s]+$/.test(name);
-    
-    this.showFieldError(fieldId, isValid ? '' : 'Name must be at least 2 characters and contain only letters');
-    return isValid;
-  }
-
-  validateEmail(email) {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const isValid = emailRegex.test(email);
-    
-    this.showFieldError('email', isValid ? '' : 'Please enter a valid email address');
-    return isValid;
-  }
-
-  validateUsername(username) {
-    const usernameRegex = /^[a-zA-Z0-9_]{3,20}$/;
-    const isValid = usernameRegex.test(username);
-    
-    this.showFieldError('username', isValid ? '' : 'Username must be 3-20 characters and contain only letters, numbers, and underscores');
-    return isValid;
-  }
-
-  validatePassword(password) {
-    const strength = this.calculatePasswordStrength(password);
-    const isValid = strength.score >= 3;
-    
-    this.showFieldError('password', isValid ? '' : 'Password must be at least "Good" strength');
-    return isValid;
-  }
-
-  validateConfirmPassword(confirmPassword) {
-    const password = document.getElementById('password').value;
-    const isValid = confirmPassword === password;
-    
-    this.showFieldError('confirmPassword', isValid ? '' : 'Passwords do not match');
-    return isValid;
-  }
-
-  showFieldError(fieldId, message) {
-    const errorElement = document.getElementById(`${fieldId}Error`);
-    if (errorElement) {
-      errorElement.textContent = message;
-      errorElement.style.display = message ? 'block' : 'none';
-    }
-  }
-
-  async handleLogin() {
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-    const rememberMe = document.getElementById('rememberMe').checked;
-
-    // Validate inputs
-    if (!this.validateEmail(email) || !this.validatePassword(password)) {
-      this.showNotification('Please fix the errors above', 'error');
-      return;
-    }
-
-    this.setLoadingState('loginBtn', true);
+  async handleLogin(e) {
+    e.preventDefault();
+    const form = e.target;
+    const email = form.email.value;
+    const password = form.password.value;
+    const rememberMe = form.rememberMe.checked;
 
     try {
-      // Simulate API call
-      await this.simulateApiCall();
+      this.showLoading('loginBtn');
+      this.clearErrors();
+
+      const user = await this.backend.authenticateUser(email, password);
       
       // Store user session
-      const userData = {
-        email,
-        loginTime: new Date().toISOString(),
-        rememberMe
-      };
+      this.currentUser = user;
+      localStorage.setItem('ai_interviewer_user', JSON.stringify(user));
       
       if (rememberMe) {
-        localStorage.setItem('userSession', JSON.stringify(userData));
-      } else {
-        sessionStorage.setItem('userSession', JSON.stringify(userData));
+        localStorage.setItem('ai_interviewer_remember', 'true');
       }
 
       this.showNotification('Login successful! Redirecting...', 'success');
       
-      // Redirect to dashboard after a short delay
       setTimeout(() => {
         window.location.href = 'dashboard.html';
       }, 1500);
 
     } catch (error) {
+      this.showError('emailError', error.message);
       this.showNotification('Login failed. Please check your credentials.', 'error');
     } finally {
-      this.setLoadingState('loginBtn', false);
+      this.hideLoading('loginBtn');
     }
   }
 
-  async handleSignup() {
+  async handleSignup(e) {
+    e.preventDefault();
+    const form = e.target;
     const formData = {
-      firstName: document.getElementById('firstName').value,
-      lastName: document.getElementById('lastName').value,
-      email: document.getElementById('email').value,
-      username: document.getElementById('username').value,
-      password: document.getElementById('password').value,
-      confirmPassword: document.getElementById('confirmPassword').value,
-      agreeTerms: document.getElementById('agreeTerms').checked,
-      emailUpdates: document.getElementById('emailUpdates').checked
+      firstName: form.firstName.value,
+      lastName: form.lastName.value,
+      email: form.email.value,
+      username: form.username.value,
+      password: form.password.value
     };
 
-    // Validate all fields
-    const validations = [
-      this.validateName(formData.firstName, 'firstName'),
-      this.validateName(formData.lastName, 'lastName'),
-      this.validateEmail(formData.email),
-      this.validateUsername(formData.username),
-      this.validatePassword(formData.password),
-      this.validateConfirmPassword(formData.confirmPassword)
-    ];
-
-    if (!validations.every(v => v) || !formData.agreeTerms) {
-      this.showNotification('Please fix the errors above and agree to the terms', 'error');
-      return;
-    }
-
-    this.setLoadingState('signupBtn', true);
-
     try {
-      // Simulate API call
-      await this.simulateApiCall();
+      this.showLoading('signupBtn');
+      this.clearErrors();
+
+      // Validate form data
+      this.validateSignupForm(formData);
+
+      const user = await this.backend.registerUser(formData);
       
-      this.showNotification('Account created successfully! Redirecting to login...', 'success');
+      // Store user session
+      this.currentUser = user;
+      localStorage.setItem('ai_interviewer_user', JSON.stringify(user));
+
+      this.showNotification('Account created successfully! Redirecting...', 'success');
       
-      // Redirect to login page after a short delay
       setTimeout(() => {
-        window.location.href = 'login.html';
-      }, 2000);
+        window.location.href = 'dashboard.html';
+      }, 1500);
 
     } catch (error) {
+      this.showError('emailError', error.message);
       this.showNotification('Signup failed. Please try again.', 'error');
     } finally {
-      this.setLoadingState('signupBtn', false);
+      this.hideLoading('signupBtn');
     }
   }
 
-  setLoadingState(buttonId, isLoading) {
-    const button = document.getElementById(buttonId);
-    const btnText = button.querySelector('.btn-text');
-    const btnSpinner = button.querySelector('.btn-spinner');
+  validateSignupForm(data) {
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(data.email)) {
+      throw new Error('Please enter a valid email address');
+    }
 
-    if (isLoading) {
-      button.disabled = true;
-      btnText.style.display = 'none';
-      btnSpinner.style.display = 'inline-block';
-    } else {
-      button.disabled = false;
-      btnText.style.display = 'inline';
-      btnSpinner.style.display = 'none';
+    // Username validation
+    if (data.username.length < 3) {
+      throw new Error('Username must be at least 3 characters long');
+    }
+
+    // Password validation
+    if (data.password.length < 8) {
+      throw new Error('Password must be at least 8 characters long');
+    }
+
+    // Confirm password
+    const confirmPassword = document.getElementById('confirmPassword').value;
+    if (data.password !== confirmPassword) {
+      throw new Error('Passwords do not match');
+    }
+
+    // Terms agreement
+    const agreeTerms = document.getElementById('agreeTerms').checked;
+    if (!agreeTerms) {
+      throw new Error('Please agree to the terms and conditions');
     }
   }
 
-  async simulateApiCall() {
-    // Simulate network delay
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        // Simulate 90% success rate
-        if (Math.random() > 0.1) {
-          resolve();
+  initializePasswordToggles() {
+    const passwordToggles = document.querySelectorAll('.password-toggle');
+    passwordToggles.forEach(toggle => {
+      toggle.addEventListener('click', (e) => {
+        e.preventDefault();
+        const input = toggle.parentElement.querySelector('input');
+        const icon = toggle.querySelector('i');
+        
+        if (input.type === 'password') {
+          input.type = 'text';
+          icon.classList.remove('fa-eye');
+          icon.classList.add('fa-eye-slash');
         } else {
-          reject(new Error('API Error'));
+          input.type = 'password';
+          icon.classList.remove('fa-eye-slash');
+          icon.classList.add('fa-eye');
         }
-      }, 1500);
+      });
     });
   }
 
+  initializePasswordStrength() {
+    const passwordInput = document.getElementById('password');
+    if (!passwordInput) return;
+
+    passwordInput.addEventListener('input', (e) => {
+      const password = e.target.value;
+      const strengthContainer = document.getElementById('passwordStrength');
+      const strengthFill = document.getElementById('strengthFill');
+      const strengthText = document.getElementById('strengthText');
+
+      if (password.length === 0) {
+        strengthContainer.style.display = 'none';
+        return;
+      }
+
+      strengthContainer.style.display = 'block';
+      
+      const strength = this.calculatePasswordStrength(password);
+      const strengthLevels = ['very-weak', 'weak', 'fair', 'good', 'strong', 'very-strong'];
+      const strengthLabels = ['Very Weak', 'Weak', 'Fair', 'Good', 'Strong', 'Very Strong'];
+      
+      strengthFill.className = `strength-fill ${strengthLevels[strength]}`;
+      strengthFill.style.width = `${(strength + 1) * 16.67}%`;
+      strengthText.className = `strength-text ${strengthLevels[strength]}`;
+      strengthText.textContent = strengthLabels[strength];
+    });
+  }
+
+  calculatePasswordStrength(password) {
+    let score = 0;
+    
+    // Length check
+    if (password.length >= 8) score++;
+    if (password.length >= 12) score++;
+    
+    // Character variety checks
+    if (/[a-z]/.test(password)) score++;
+    if (/[A-Z]/.test(password)) score++;
+    if (/[0-9]/.test(password)) score++;
+    if (/[^A-Za-z0-9]/.test(password)) score++;
+    
+    return Math.min(score, 5);
+  }
+
+  initializeFormValidation() {
+    const inputs = document.querySelectorAll('input[required]');
+    inputs.forEach(input => {
+      input.addEventListener('blur', () => this.validateField(input));
+      input.addEventListener('input', () => this.clearFieldError(input));
+    });
+  }
+
+  validateField(field) {
+    const value = field.value.trim();
+    const fieldName = field.name;
+    let errorMessage = '';
+
+    switch (fieldName) {
+      case 'email':
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (value && !emailRegex.test(value)) {
+          errorMessage = 'Please enter a valid email address';
+        }
+        break;
+      case 'username':
+        if (value && value.length < 3) {
+          errorMessage = 'Username must be at least 3 characters long';
+        }
+        break;
+      case 'password':
+        if (value && value.length < 8) {
+          errorMessage = 'Password must be at least 8 characters long';
+        }
+        break;
+      case 'confirmPassword':
+        const password = document.getElementById('password').value;
+        if (value && value !== password) {
+          errorMessage = 'Passwords do not match';
+        }
+        break;
+    }
+
+    if (errorMessage) {
+      this.showError(`${fieldName}Error`, errorMessage);
+    } else {
+      this.clearFieldError(field);
+    }
+  }
+
+  clearFieldError(field) {
+    const errorElement = document.getElementById(`${field.name}Error`);
+    if (errorElement) {
+      errorElement.textContent = '';
+      errorElement.style.display = 'none';
+    }
+  }
+
+  showError(fieldId, message) {
+    const errorElement = document.getElementById(fieldId);
+    if (errorElement) {
+      errorElement.textContent = message;
+      errorElement.style.display = 'block';
+    }
+  }
+
+  clearErrors() {
+    const errorElements = document.querySelectorAll('.error-message');
+    errorElements.forEach(element => {
+      element.textContent = '';
+      element.style.display = 'none';
+    });
+  }
+
+  showLoading(buttonId) {
+    const button = document.getElementById(buttonId);
+    if (button) {
+      const btnText = button.querySelector('.btn-text');
+      const btnSpinner = button.querySelector('.btn-spinner');
+      
+      if (btnText) btnText.style.display = 'none';
+      if (btnSpinner) btnSpinner.style.display = 'inline-block';
+      
+      button.disabled = true;
+    }
+  }
+
+  hideLoading(buttonId) {
+    const button = document.getElementById(buttonId);
+    if (button) {
+      const btnText = button.querySelector('.btn-text');
+      const btnSpinner = button.querySelector('.btn-spinner');
+      
+      if (btnText) btnText.style.display = 'inline';
+      if (btnSpinner) btnSpinner.style.display = 'none';
+      
+      button.disabled = false;
+    }
+  }
+
   showNotification(message, type = 'info') {
+    // Remove existing notifications
+    const existingNotifications = document.querySelectorAll('.notification');
+    existingNotifications.forEach(notification => notification.remove());
+
     // Create notification element
     const notification = document.createElement('div');
     notification.className = `notification notification-${type}`;
     notification.innerHTML = `
       <div class="notification-content">
-        <i class="fa-solid ${this.getNotificationIcon(type)}"></i>
+        <i class="fa-solid fa-${this.getNotificationIcon(type)}"></i>
         <span>${message}</span>
         <button class="notification-close" onclick="this.parentElement.parentElement.remove()">
           <i class="fa-solid fa-times"></i>
@@ -321,39 +327,57 @@ class AuthManager {
       </div>
     `;
 
-    // Add to page
     document.body.appendChild(notification);
 
-    // Animate in
+    // Show notification with animation
     setTimeout(() => {
       notification.classList.add('show');
-    }, 10);
+    }, 100);
 
-    // Auto remove after 5 seconds
+    // Auto-hide after 5 seconds
     setTimeout(() => {
-      if (notification.parentElement) {
-        notification.classList.remove('show');
-        setTimeout(() => {
-          if (notification.parentElement) {
-            notification.remove();
-          }
-        }, 300);
-      }
+      notification.classList.remove('show');
+      setTimeout(() => notification.remove(), 300);
     }, 5000);
   }
 
   getNotificationIcon(type) {
     const icons = {
-      success: 'fa-check-circle',
-      error: 'fa-exclamation-circle',
-      warning: 'fa-exclamation-triangle',
-      info: 'fa-info-circle'
+      success: 'check-circle',
+      error: 'exclamation-circle',
+      warning: 'exclamation-triangle',
+      info: 'info-circle'
     };
-    return icons[type] || icons.info;
+    return icons[type] || 'info-circle';
+  }
+
+  // Logout functionality
+  logout() {
+    this.currentUser = null;
+    localStorage.removeItem('ai_interviewer_user');
+    localStorage.removeItem('ai_interviewer_remember');
+    window.location.href = 'index.html';
+  }
+
+  // Check if user is logged in
+  isLoggedIn() {
+    return this.currentUser !== null;
+  }
+
+  // Get current user
+  getCurrentUser() {
+    return this.currentUser;
   }
 }
 
-// Initialize authentication manager when page loads
+// Initialize authentication system when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-  new AuthManager();
+  window.authSystem = new AuthenticationSystem();
 });
+
+// Global logout function
+function logout() {
+  if (window.authSystem) {
+    window.authSystem.logout();
+  }
+}
