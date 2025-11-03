@@ -281,6 +281,24 @@ Explanation: Because nums[0] + nums[1] == 9, we return [0, 1].</pre>
     </section>
   </main>
 
+  <!-- Custom Confirmation Modal -->
+  <div id="confirmModal" class="confirm-modal" style="display: none;">
+    <div class="confirm-modal-overlay"></div>
+    <div class="confirm-modal-content">
+      <div class="confirm-modal-header">
+        <i class="fa-solid fa-exclamation-triangle"></i>
+        <h3 id="confirmModalTitle">Confirm Action</h3>
+      </div>
+      <div class="confirm-modal-body">
+        <p id="confirmModalMessage">Are you sure you want to proceed?</p>
+      </div>
+      <div class="confirm-modal-footer">
+        <button id="confirmModalCancel" class="btn-secondary">Cancel</button>
+        <button id="confirmModalConfirm" class="btn-primary">Confirm</button>
+      </div>
+    </div>
+  </div>
+
   <footer class="site-footer">
     <div class="container footer-inner">
       <p>© <span id="year"></span> AI Interviewer. All rights reserved.</p>
