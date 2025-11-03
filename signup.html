@@ -125,19 +125,7 @@
                             <i class="fa-solid fa-spinner fa-spin btn-spinner" style="display: none;"></i>
                         </button>
 
-                        <div class="auth-divider">
-                            <span>or</span>
-                        </div>
-
-                        <button type="button" class="btn social-btn google-btn">
-                            <i class="fa-brands fa-google"></i>
-                            Continue with Google
-                        </button>
-
-                        <button type="button" class="btn social-btn github-btn">
-                            <i class="fa-brands fa-github"></i>
-                            Continue with GitHub
-                        </button>
+                        
                     </form>
 
                     <div class="auth-footer">
@@ -193,7 +181,13 @@
         </div>
         <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
     </footer>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
+    <script src="supabaseClient.js"></script>
+    <script src="supabase-db.js"></script>
+    <script src="auth-check.js"></script>
     <script src="backend-simulator.js"></script>
+    <script src="modern-ui.js"></script>
     <script src="auth.js"></script>
 </body>
 </html>
