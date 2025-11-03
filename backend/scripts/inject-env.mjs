@@ -7,9 +7,10 @@ import url from 'url';
 const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const projectRoot = __dirname;
+// Get project root (two levels up from backend/scripts/)
+const projectRoot = path.resolve(__dirname, '../..');
 const envPath = path.join(projectRoot, '.env');
-const configPath = path.join(projectRoot, 'supabase-config.js');
+const configPath = path.join(projectRoot, 'frontend/js/supabase-config.js');
 
 function parseDotEnv(content) {
   const lines = content.split(/\r?\n/);

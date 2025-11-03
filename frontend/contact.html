@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>About • AI Interviewer</title>
-  <link rel="stylesheet" href="main.css">
+  <title>Contact • AI Interviewer</title>
+  <link rel="stylesheet" href="css/main.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
@@ -53,9 +53,9 @@
       <label for="nav-toggle" class="nav-toggle-btn"><span></span><span></span><span></span></label>
       <nav class="site-nav">
         <a href="index.html">Home</a>
-        <a href="about.html" class="active">About</a>
+        <a href="about.html">About</a>
         <a href="services.html">Services</a>
-        <a href="contact.html">Contact</a>
+        <a href="contact.html" class="active">Contact</a>
         <a href="login.html" class="login-link"><i class="fa-regular fa-user"></i> Login</a>
       </nav>
     </div>
@@ -65,29 +65,34 @@
     <section class="hero">
       <div class="container">
         <div class="hero-content">
-          <h1>About AI Interviewer</h1>
-          <p class="subtitle">Our mission is to help candidates practice smarter and land their next role.</p>
+          <h1>Contact us</h1>
+          <p class="subtitle">Questions, feedback, or partnership ideas? We’d love to hear from you.</p>
         </div>
       </div>
     </section>
 
     <section class="container">
-      <h2 class="section-title">What we offer</h2>
-      <p style="margin-bottom:12px;">We combine high-quality prompts, adaptive difficulty, and helpful feedback to simulate real technical interviews.</p>
-      <div class="card-grid">
-        <article class="card">
-          <h3>Realistic Scenarios</h3>
-          <p>Practice with scenario-based questions that reflect what companies actually ask.</p>
-        </article>
-        <article class="card">
-          <h3>Personalized Learning</h3>
-          <p>Focus on your weak areas and track progress as you grow your skills.</p>
-        </article>
-        <article class="card">
-          <h3>Always Available</h3>
-          <p>Practice anytime, anywhere from your browser—no setup required.</p>
-        </article>
-      </div>
+      <h2 class="section-title">Send a message</h2>
+      <form class="demo-form" onsubmit="return false;">
+        <label for="name">Your Name</label>
+        <input id="name" type="text" placeholder="Jane Doe" />
+        
+        <label for="email">Email</label>
+        <input id="email" type="email" placeholder="jane@example.com" />
+
+        <label for="topic">Topic</label>
+        <select id="topic">
+          <option>General</option>
+          <option>Support</option>
+          <option>Partnership</option>
+        </select>
+
+        <label for="message">Message</label>
+        <textarea id="message" rows="5" placeholder="How can we help?"></textarea>
+
+        <div></div>
+        <button type="submit" class="btn primary">Send</button>
+      </form>
     </section>
   </main>
 
@@ -103,12 +108,12 @@
     <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
   </footer>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="supabase-config.js"></script>
-  <script src="supabaseClient.js"></script>
-  <script src="supabase-db.js"></script>
-  <script src="auth-check.js"></script>
-  <script src="modern-ui.js"></script>
-  <script src="page-transitions.js"></script>
+  <script src="js/supabase-config.js"></script>
+  <script src="js/supabaseClient.js"></script>
+  <script src="js/supabase-db.js"></script>
+  <script src="js/auth-check.js"></script>
+  <script src="js/modern-ui.js"></script>
+  <script src="js/page-transitions.js"></script>
 </body>
 </html>
 

@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Services • AI Interviewer</title>
-  <link rel="stylesheet" href="main.css">
+  <title>AI Interviewer Web App</title>
+  <link rel="stylesheet" href="css/main.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
@@ -52,9 +52,9 @@
       <input type="checkbox" id="nav-toggle" class="nav-toggle" aria-label="Toggle navigation">
       <label for="nav-toggle" class="nav-toggle-btn"><span></span><span></span><span></span></label>
       <nav class="site-nav">
-        <a href="index.html">Home</a>
+        <a href="index.html" class="active">Home</a>
         <a href="about.html">About</a>
-        <a href="services.html" class="active">Services</a>
+        <a href="services.html">Services</a>
         <a href="contact.html">Contact</a>
         <a href="login.html" class="login-link"><i class="fa-regular fa-user"></i> Login</a>
       </nav>
@@ -65,45 +65,87 @@
     <section class="hero">
       <div class="container">
         <div class="hero-content">
-          <h1>Features to level up your prep</h1>
-          <p class="subtitle">Everything you need to practice effectively and track progress.</p>
+          <h1>Practice Technical Interviews with Confidence</h1>
+          <p class="subtitle">Interactive, AI-generated questions with real-time guidance to help you improve faster.</p>
+          <div class="hero-actions">
+            <a href="services.html" class="btn primary">Explore Features</a>
+            <a href="signup.html" class="btn">Get Started</a>
+          </div>
         </div>
       </div>
     </section>
 
     <section class="container features">
-      <h2 class="section-title">Core Features</h2>
+      <h2 class="section-title">Why use AI Interviewer?</h2>
       <div class="card-grid">
         <article class="card">
-          <i class="fa-solid fa-list-check"></i>
-          <h3>Topic Library</h3>
-          <p>Curated questions across Arrays, Strings, Graphs, DP, Trees, and more.</p>
+          <i class="fa-solid fa-code"></i>
+          <h3>Topic-Focused Practice</h3>
+          <p>Choose topics like Arrays, Graphs, DP, Trees and practice targeted problems.</p>
         </article>
         <article class="card">
-          <i class="fa-solid fa-brain"></i>
-          <h3>Adaptive Engine</h3>
-          <p>Adjusts difficulty based on your answers to keep you challenged.</p>
+          <i class="fa-solid fa-signal"></i>
+          <h3>Adaptive Difficulty</h3>
+          <p>Start Easy and level up to Medium and Hard as you improve.</p>
         </article>
         <article class="card">
-          <i class="fa-solid fa-lightbulb"></i>
-          <h3>Hints & Explanations</h3>
-          <p>Structured hints and solution breakdowns to reinforce learning.</p>
+          <i class="fa-regular fa-comments"></i>
+          <h3>Guided Feedback</h3>
+          <p>Receive hints and feedback during practice to learn more effectively.</p>
         </article>
-        <article class="card">
-          <i class="fa-solid fa-chart-line"></i>
-          <h3>Progress Tracking</h3>
-          <p>Visualize your improvement and identify areas to focus on.</p>
-        </article>
-        <article class="card">
-          <i class="fa-solid fa-clock"></i>
-          <h3>Timed Sessions</h3>
-          <p>Simulate interview pressure with configurable timers.</p>
-        </article>
-        <article class="card">
-          <i class="fa-solid fa-cloud"></i>
-          <h3>Browser-Based</h3>
-          <p>Nothing to install. Practice from any device.</p>
-        </article>
+      </div>
+    </section>
+
+    <section class="container demo">
+      <h2>Quick Start Demo</h2>
+      <form class="demo-form" id="demoForm">
+        <label for="topic">Topic</label>
+        <select id="topic">
+          <option value="arrays">Arrays</option>
+          <option value="strings">Strings</option>
+          <option value="graphs">Graphs</option>
+          <option value="dynamic-programming">Dynamic Programming</option>
+          <option value="trees">Trees</option>
+        </select>
+
+        <label for="difficulty">Difficulty</label>
+        <select id="difficulty">
+          <option value="easy">Easy</option>
+          <option value="medium">Medium</option>
+          <option value="hard">Hard</option>
+        </select>
+
+        <button type="submit" class="btn primary">Generate Question</button>
+      </form>
+      
+      <div id="questionDisplay" class="question-display" style="display: none;">
+        <div class="question-header">
+          <h3 id="questionTitle"></h3>
+          <div class="question-meta">
+            <span id="questionTopic" class="topic-badge"></span>
+            <span id="questionDifficulty" class="difficulty-badge"></span>
+          </div>
+        </div>
+        <div class="question-content">
+          <p id="questionDescription"></p>
+          <div class="question-example">
+            <h4>Example:</h4>
+            <pre id="questionExample"></pre>
+          </div>
+        </div>
+        <div class="question-actions">
+          <button id="showHint" class="btn">Get Hint</button>
+          <button id="showSolution" class="btn">Show Solution</button>
+          <button id="newQuestion" class="btn primary">New Question</button>
+        </div>
+        <div id="hintDisplay" class="hint-display" style="display: none;">
+          <h4>Hint:</h4>
+          <p id="hintText"></p>
+        </div>
+        <div id="solutionDisplay" class="solution-display" style="display: none;">
+          <h4>Solution:</h4>
+          <pre id="solutionText"></pre>
+        </div>
       </div>
     </section>
   </main>
@@ -120,13 +162,13 @@
     <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
   </footer>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="supabase-config.js"></script>
-  <script src="supabaseClient.js"></script>
-  <script src="supabase-db.js"></script>
-  <script src="auth-check.js"></script>
-  <script src="modern-ui.js"></script>
-  <script src="page-transitions.js"></script>
+  <script src="js/supabase-config.js"></script>
+  <script src="js/supabaseClient.js"></script>
+  <script src="js/supabase-db.js"></script>
+  <script src="js/auth-check.js"></script>
+  <script src="js/backend-simulator.js"></script>
+  <script src="js/modern-ui.js"></script>
+  <script src="js/page-transitions.js"></script>
+  <script src="js/demo.js"></script>
 </body>
 </html>
-
-

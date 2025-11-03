@@ -14,11 +14,11 @@ class BackendSimulator {
     try {
       // Load data from JSON files
       const [usersData, sessionsData, progressData, questionsData, neetcodeData] = await Promise.all([
-        this.loadJSON('users.json'),
-        this.loadJSON('sessions.json'),
-        this.loadJSON('progress.json'),
-        this.loadJSON('data-structures.json'),
-        this.loadJSON('neetcode-75.json').catch(() => ({})) // Load NeetCode, but don't fail if missing
+        this.loadJSON('data/users.json'),
+        this.loadJSON('data/sessions.json'),
+        this.loadJSON('data/progress.json'),
+        this.loadJSON('data/data-structures.json'),
+        this.loadJSON('data/neetcode-75.json').catch(() => ({})) // Load NeetCode, but don't fail if missing
       ]);
 
       this.data.users = usersData.users || [];

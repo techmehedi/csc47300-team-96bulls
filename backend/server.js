@@ -4,11 +4,11 @@ import dotenv from 'dotenv';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import { createClient } from '@supabase/supabase-js';
-import sessionRoutes from './backend/routes/sessions.js';
-import progressRoutes from './backend/routes/progress.js';
-import questionsRoutes from './backend/routes/questions.js';
-import statsRoutes from './backend/routes/stats.js';
-import executeRoutes from './backend/routes/execute.js';
+import sessionRoutes from './routes/sessions.js';
+import progressRoutes from './routes/progress.js';
+import questionsRoutes from './routes/questions.js';
+import statsRoutes from './routes/stats.js';
+import executeRoutes from './routes/execute.js';
 
 // Load environment variables
 dotenv.config();
