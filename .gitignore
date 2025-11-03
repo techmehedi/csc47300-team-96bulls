@@ -27,8 +27,8 @@ Thumbs.db
 *~
 
 # Generated config
-supabase-config.js
-supabase-schema.sql
+frontend/js/supabase-config.js
+backend/config/supabase-schema.sql
 
 # Build files
 dist/
