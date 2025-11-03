@@ -6,6 +6,11 @@
   <title>Practice Session • AI Interviewer</title>
   <link rel="stylesheet" href="main.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <!-- CodeMirror for syntax highlighting -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/monokai.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/javascript/javascript.min.js"></script>
 </head>
 <body>
   <header class="site-header">
@@ -140,7 +145,7 @@ Explanation: Because nums[0] + nums[1] == 9, we return [0, 1].</pre>
 
         <div class="solution-area">
           <h4>Your Solution:</h4>
-          <div class="code-editor">
+          <div class="code-editor-container">
             <textarea id="codeInput" placeholder="Write your solution here...">function twoSum(nums, target) {
     // Your code here
     
@@ -155,8 +160,8 @@ Explanation: Because nums[0] + nums[1] == 9, we return [0, 1].</pre>
         </div>
 
         <div id="hintDisplay" class="hint-display" style="display: none;">
-          <h4>Hint:</h4>
-          <p id="hintText">Use a hash map to store numbers and their indices as you iterate through the array.</p>
+          <h4><i class="fa-solid fa-lightbulb"></i> Hints:</h4>
+          <div id="hintText"></div>
         </div>
 
         <div id="solutionDisplay" class="solution-display" style="display: none;">
@@ -172,6 +177,13 @@ Explanation: Because nums[0] + nums[1] == 9, we return [0, 1].</pre>
     }
     return [];
 }</pre>
+        </div>
+
+        <div id="codeOutputDisplay" class="code-output-display" style="display: none;">
+          <h4>Output:</h4>
+          <div id="codeOutput" class="code-output">
+            <!-- Output will be displayed here -->
+          </div>
         </div>
 
         <div id="resultDisplay" class="result-display" style="display: none;">
@@ -242,7 +254,14 @@ Explanation: Because nums[0] + nums[1] == 9, we return [0, 1].</pre>
     </div>
     <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
   </footer>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="supabaseClient.js"></script>
+  <script src="supabase-db.js"></script>
+  <script src="backend-api.js"></script>
+  <script src="auth-check.js"></script>
   <script src="backend-simulator.js"></script>
+  <script src="modern-ui.js"></script>
   <script src="practice.js"></script>
 </body>
 </html>
