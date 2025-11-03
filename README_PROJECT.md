@@ -92,6 +92,12 @@ Advanced analytics dashboard providing detailed insights into user performance, 
    - This enables storing practice sessions and progress in Supabase.
 5. In Supabase Authentication settings:
    - Enable Email/Password sign in.
+   - **Configure redirect URLs** (important for email confirmation):
+     - Go to Authentication → URL Configuration
+     - Add your redirect URLs to "Redirect URLs" list:
+       - For local development: `http://127.0.0.1:5500/**` and `http://localhost:5500/**`
+       - For production: Your production domain URL
+     - This allows Supabase to redirect users back to your app after email confirmation
 6. Session persistence is handled automatically - users stay logged in across page navigations.
 
 Notes:
@@ -112,6 +118,17 @@ Notes:
 - Modern UI with smooth animations
 - Accessibility-compliant navigation
 - Mobile-first approach
+
+### ✅ Rubric & Checklists
+- Rubric applied to this project: see `docs/RUBRIC.md`
+- Feature-specific acceptance checklists: see `docs/FEATURE_CHECKLISTS.md`
+- UI coolness checklist: see `docs/UI_COOLNESS_CHECKLIST.md`
+- TypeScript conversion plan: see `docs/TS_CONVERSION_PLAN.md`
+
+Run-through suggestion before demo:
+1) Complete a practice session → confirm `sessions` row and `user_progress` updated in Supabase
+2) Open Dashboard → verify stats, chart, topics, and recent activity reflect latest session
+3) Review checklists and walk through each acceptance item
 
 ### 🔧 Technical Implementation
 - Pure JavaScript (no frameworks)
