@@ -10,7 +10,45 @@
 <body>
     <header class="site-header">
         <div class="nav-container">
-            <a href="index.html" class="brand"><i class="fa-solid fa-robot"></i><span>AI Interviewer</span></a>
+            <a href="index.html" class="brand">
+              <div class="logo-icon">
+                <svg width="32" height="32" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <defs>
+                    <linearGradient id="logoGradient1" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+                      <stop offset="50%" style="stop-color:#764ba2;stop-opacity:1" />
+                      <stop offset="100%" style="stop-color:#f093fb;stop-opacity:1" />
+                    </linearGradient>
+                    <linearGradient id="logoGradient2" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" style="stop-color:#4facfe;stop-opacity:1" />
+                      <stop offset="100%" style="stop-color:#00f2fe;stop-opacity:1" />
+                    </linearGradient>
+                    <filter id="glow">
+                      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                      <feMerge>
+                        <feMergeNode in="coloredBlur"/>
+                        <feMergeNode in="SourceGraphic"/>
+                      </feMerge>
+                    </filter>
+                  </defs>
+                  <g transform="translate(60, 60)">
+                    <circle cx="-25" cy="-15" r="6" fill="url(#logoGradient1)" filter="url(#glow)"/>
+                    <circle cx="25" cy="-15" r="6" fill="url(#logoGradient2)" filter="url(#glow)"/>
+                    <circle cx="0" cy="0" r="10" fill="url(#logoGradient1)" filter="url(#glow)"/>
+                    <circle cx="-20" cy="20" r="5" fill="url(#logoGradient2)" filter="url(#glow)"/>
+                    <circle cx="20" cy="20" r="5" fill="url(#logoGradient1)" filter="url(#glow)"/>
+                    <line x1="-25" y1="-15" x2="0" y2="0" stroke="url(#logoGradient1)" stroke-width="1.5" opacity="0.7"/>
+                    <line x1="25" y1="-15" x2="0" y2="0" stroke="url(#logoGradient2)" stroke-width="1.5" opacity="0.7"/>
+                    <line x1="0" y1="0" x2="-20" y2="20" stroke="url(#logoGradient1)" stroke-width="1.5" opacity="0.7"/>
+                    <line x1="0" y1="0" x2="20" y2="20" stroke="url(#logoGradient2)" stroke-width="1.5" opacity="0.7"/>
+                    <circle cx="0" cy="0" r="4" fill="#ffffff" opacity="0.9"/>
+                    <text x="-30" y="8" font-family="Monaco, monospace" font-size="18" fill="url(#logoGradient1)" font-weight="bold">{</text>
+                    <text x="18" y="8" font-family="Monaco, monospace" font-size="18" fill="url(#logoGradient2)" font-weight="bold">}</text>
+                  </g>
+                </svg>
+              </div>
+              <span>AI Interviewer</span>
+            </a>
             <input type="checkbox" id="nav-toggle" class="nav-toggle" aria-label="Toggle navigation">
             <label for="nav-toggle" class="nav-toggle-btn"><span></span><span></span><span></span></label>
             <nav class="site-nav">
@@ -135,6 +173,7 @@
     <script src="auth-check.js"></script>
     <script src="backend-simulator.js"></script>
     <script src="modern-ui.js"></script>
+    <script src="page-transitions.js"></script>
     <script src="auth.js"></script>
 </body>
 </html>
