@@ -2,11 +2,12 @@
   "name": "ai-interviewer-backend",
   "version": "1.0.0",
   "description": "Express backend for AI Interviewer web app",
-  "main": "server.js",
+  "main": "backend/server.js",
   "type": "module",
   "scripts": {
-    "start": "node server.js",
-    "dev": "nodemon server.js"
+    "start": "node backend/server.js",
+    "dev": "nodemon backend/server.js",
+    "ts:build": "tsc -p tsconfig.json"
   },
   "keywords": ["express", "api", "interviewer"],
   "author": "",
@@ -21,7 +22,8 @@
     "morgan": "^1.10.0"
   },
   "devDependencies": {
-    "nodemon": "^3.0.2"
+    "nodemon": "^3.0.2",
+    "typescript": "^5.4.0"
   }
 }
 
