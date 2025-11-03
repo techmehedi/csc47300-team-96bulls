@@ -25,8 +25,8 @@ router.get('/', async (req, res) => {
     // For now, we'll use local files but with better structure
     
     // Load NeetCode questions
-    const neetcodePath = path.join(projectRoot, 'neetcode-75.json');
-    const dataStructuresPath = path.join(projectRoot, 'data-structures.json');
+    const neetcodePath = path.join(projectRoot, 'frontend/data/neetcode-75.json');
+    const dataStructuresPath = path.join(projectRoot, 'frontend/data/data-structures.json');
     
     try {
       // Load NeetCode questions
