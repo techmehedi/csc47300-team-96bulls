@@ -13,17 +13,22 @@ class BackendSimulator {
   async initializeData() {
     try {
       // Load data from JSON files
-      const [usersData, sessionsData, progressData, questionsData] = await Promise.all([
+      const [usersData, sessionsData, progressData, questionsData, neetcodeData] = await Promise.all([
         this.loadJSON('users.json'),
         this.loadJSON('sessions.json'),
         this.loadJSON('progress.json'),
-        this.loadJSON('data-structures.json')
+        this.loadJSON('data-structures.json'),
+        this.loadJSON('neetcode-75.json').catch(() => ({})) // Load NeetCode, but don't fail if missing
       ]);
 
       this.data.users = usersData.users || [];
       this.data.sessions = sessionsData.sessions || [];
       this.data.progress = progressData.userProgress || [];
-      this.data.questions = questionsData.questions?.sampleData || [];
+      
+      // Combine questions from data-structures.json and neetcode-75.json
+      const standardQuestions = questionsData.questions?.sampleData || [];
+      const neetcodeQuestions = neetcodeData.questions || [];
+      this.data.questions = [...neetcodeQuestions, ...standardQuestions];
     } catch (error) {
       console.error('Error loading data:', error);
     }
