@@ -1,7 +1,6 @@
 // Authentication System for AI Interviewer
 class AuthenticationSystem {
   constructor() {
-    this.backend = new BackendSimulator();
     this.currentUser = null;
     this.initializeEventListeners();
     this.checkExistingSession();
@@ -28,9 +27,21 @@ class AuthenticationSystem {
     
     // Form validation
     this.initializeFormValidation();
+
   }
 
   async checkExistingSession() {
+    // Prefer Supabase session
+    if (window.getSupabaseUser && window.supabaseClient) {
+      const user = await window.getSupabaseUser();
+      if (user) {
+        this.currentUser = this.mapSupabaseUser(user);
+        localStorage.setItem('ai_interviewer_user', JSON.stringify(this.currentUser));
+        this.updateNavigationForLoggedInUser();
+        return;
+      }
+    }
+    // Fallback to local stored session (legacy)
     const userData = localStorage.getItem('ai_interviewer_user');
     if (userData) {
       this.currentUser = JSON.parse(userData);
@@ -57,11 +68,41 @@ class AuthenticationSystem {
       this.showLoading('loginBtn');
       this.clearErrors();
 
-      const user = await this.backend.authenticateUser(email, password);
-      
-      // Store user session
-      this.currentUser = user;
-      localStorage.setItem('ai_interviewer_user', JSON.stringify(user));
+      // Wait for Supabase client to be ready
+      let waitCount = 0;
+      while (!window.supabaseClient && waitCount < 50) {
+        await new Promise(resolve => setTimeout(resolve, 100));
+        waitCount++;
+      }
+
+      if (!window.supabaseClient) {
+        console.error('Supabase client not available. Check configuration.');
+        throw new Error('Supabase is not initialized. Please check your configuration.');
+      }
+
+      if (!window.SUPABASE_URL || !window.SUPABASE_ANON_KEY) {
+        console.error('Supabase credentials missing');
+        throw new Error('Supabase configuration is missing. Please set up your .env file and run: node inject-env.mjs');
+      }
+
+      console.log('Attempting to login user:', email);
+
+      const { data, error } = await window.supabaseClient.auth.signInWithPassword({ email, password });
+      if (error) {
+        console.error('Supabase login error:', error);
+        throw error;
+      }
+
+      const user = data?.user;
+      if (!user) {
+        throw new Error('Login failed - no user returned');
+      }
+
+      console.log('Login successful:', user.id);
+
+      // Store user session (mirror minimal profile)
+      this.currentUser = this.mapSupabaseUser(user);
+      localStorage.setItem('ai_interviewer_user', JSON.stringify(this.currentUser));
       
       if (rememberMe) {
         localStorage.setItem('ai_interviewer_remember', 'true');
@@ -74,8 +115,18 @@ class AuthenticationSystem {
       }, 1500);
 
     } catch (error) {
-      this.showError('emailError', error.message);
-      this.showNotification('Login failed. Please check your credentials.', 'error');
+      console.error('Login error:', error);
+      const errorMessage = error.message || error.toString() || 'Login failed';
+      this.showError('emailError', errorMessage);
+      
+      // More specific error messages
+      if (errorMessage.includes('fetch')) {
+        this.showNotification('Network error: Unable to connect to Supabase. Check your internet connection and Supabase URL.', 'error');
+      } else if (errorMessage.includes('Invalid login')) {
+        this.showNotification('Invalid email or password. Please try again.', 'error');
+      } else {
+        this.showNotification('Login failed: ' + errorMessage, 'error');
+      }
     } finally {
       this.hideLoading('loginBtn');
     }
@@ -99,24 +150,103 @@ class AuthenticationSystem {
       // Validate form data
       this.validateSignupForm(formData);
 
-      const user = await this.backend.registerUser(formData);
-      
-      // Store user session
-      this.currentUser = user;
-      localStorage.setItem('ai_interviewer_user', JSON.stringify(user));
+      // Wait for Supabase client to be ready
+      let waitCount = 0;
+      while (!window.supabaseClient && waitCount < 50) {
+        await new Promise(resolve => setTimeout(resolve, 100));
+        waitCount++;
+      }
 
-      this.showNotification('Account created successfully! Redirecting...', 'success');
+      if (!window.supabaseClient) {
+        console.error('Supabase client not available. Check configuration.');
+        throw new Error('Supabase is not initialized. Please check your configuration.');
+      }
+
+      if (!window.SUPABASE_URL || !window.SUPABASE_ANON_KEY) {
+        console.error('Supabase credentials missing:', {
+          url: window.SUPABASE_URL,
+          key: window.SUPABASE_ANON_KEY ? 'present' : 'missing'
+        });
+        throw new Error('Supabase configuration is missing. Please set up your .env file and run: node inject-env.mjs');
+      }
+
+      console.log('Attempting to sign up user:', formData.email);
+
+      const { data, error } = await window.supabaseClient.auth.signUp({
+        email: formData.email,
+        password: formData.password,
+        options: {
+          data: {
+            firstName: formData.firstName,
+            lastName: formData.lastName,
+            username: formData.username
+          }
+        }
+      });
+
+      if (error) {
+        console.error('Supabase signup error:', error);
+        throw error;
+      }
+
+      console.log('Signup successful:', data);
+
+      const user = data?.user;
+      if (user) {
+        // Store user session mirror (if session is created immediately)
+        this.currentUser = this.mapSupabaseUser(user);
+        localStorage.setItem('ai_interviewer_user', JSON.stringify(this.currentUser));
+      }
+
+      // If email confirmation is required, inform the user
+      const requiresEmailConfirm = !data?.session;
+      this.showNotification(
+        requiresEmailConfirm ? 'Account created! Check your email to confirm.' : 'Account created successfully! Redirecting...',
+        'success'
+      );
       
-      setTimeout(() => {
-        window.location.href = 'dashboard.html';
-      }, 1500);
+      if (!requiresEmailConfirm) {
+        setTimeout(() => {
+          window.location.href = 'dashboard.html';
+        }, 1500);
+      }
 
     } catch (error) {
-      this.showError('emailError', error.message);
-      this.showNotification('Signup failed. Please try again.', 'error');
+      console.error('Signup error:', error);
+      const errorMessage = error.message || error.toString() || 'Signup failed';
+      this.showError('emailError', errorMessage);
+      
+      // More specific error messages
+      if (errorMessage.includes('fetch')) {
+        this.showNotification('Network error: Unable to connect to Supabase. Check your internet connection and Supabase URL.', 'error');
+      } else if (errorMessage.includes('configuration')) {
+        this.showNotification('Configuration error: Please set up your Supabase credentials.', 'error');
+      } else {
+        this.showNotification('Signup failed: ' + errorMessage, 'error');
+      }
     } finally {
       this.hideLoading('signupBtn');
     }
+  }
+
+  
+
+  mapSupabaseUser(user) {
+    const meta = user.user_metadata || {};
+    return {
+      id: user.id,
+      email: user.email,
+      username: meta.username || (user.email ? user.email.split('@')[0] : ''),
+      firstName: meta.firstName || '',
+      lastName: meta.lastName || '',
+      preferences: {
+        theme: 'light',
+        difficulty: 'medium',
+        topics: [],
+        notifications: true,
+        emailUpdates: true
+      }
+    };
   }
 
   validateSignupForm(data) {
@@ -352,7 +482,12 @@ class AuthenticationSystem {
   }
 
   // Logout functionality
-  logout() {
+  async logout() {
+    try {
+      if (window.supabaseClient) {
+        await window.supabaseClient.auth.signOut();
+      }
+    } catch (e) {}
     this.currentUser = null;
     localStorage.removeItem('ai_interviewer_user');
     localStorage.removeItem('ai_interviewer_remember');
