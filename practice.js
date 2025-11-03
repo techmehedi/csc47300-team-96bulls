@@ -311,13 +311,35 @@ class PracticeSession {
     // Update question display
     document.getElementById('currentQuestionTitle').textContent = question.title;
     document.getElementById('currentQuestionDescription').textContent = question.description;
-    document.getElementById('currentQuestionExample').textContent = question.example;
+    
+    // Format and display examples
+    const exampleElement = document.getElementById('currentQuestionExample');
+    if (question.examples && Array.isArray(question.examples) && question.examples.length > 0) {
+      // Format examples from array
+      const exampleText = question.examples.map((ex, index) => {
+        let formatted = `Input: ${ex.input || 'N/A'}\nOutput: ${ex.output || 'N/A'}`;
+        if (ex.explanation) {
+          formatted += `\nExplanation: ${ex.explanation}`;
+        }
+        return formatted;
+      }).join('\n\n');
+      exampleElement.textContent = exampleText;
+    } else if (question.example) {
+      // Fallback to singular example string if it exists
+      exampleElement.textContent = question.example;
+    } else {
+      exampleElement.textContent = 'No example provided.';
+    }
     
     // Update constraints
     const constraintsList = document.getElementById('currentQuestionConstraints');
-    constraintsList.innerHTML = question.constraints.map(constraint => 
-      `<li>${constraint}</li>`
-    ).join('');
+    if (question.constraints && Array.isArray(question.constraints) && question.constraints.length > 0) {
+      constraintsList.innerHTML = question.constraints.map(constraint => 
+        `<li>${constraint}</li>`
+      ).join('');
+    } else {
+      constraintsList.innerHTML = '<li>No constraints specified.</li>';
+    }
 
     // Update topic and difficulty badges
     const topicBadge = document.getElementById('currentQuestionTopic');
@@ -345,6 +367,9 @@ class PracticeSession {
     // Hide hints and solutions
     this.hideHintsAndSolutions();
     this.hideResult();
+
+    // Start timing for this question
+    this.questionStartTime = new Date();
 
     // Update progress
     this.updateProgress();
@@ -939,7 +964,8 @@ console.log(\`Passed: \${results.filter(r => r.passed).length}/\${results.length
     }
 
     const question = this.questions[this.currentQuestionIndex];
-    const startTime = new Date();
+    // Use the time when the question was loaded to measure solve duration
+    const questionStart = this.questionStartTime || this.sessionStartTime || new Date();
     
     try {
       this.showLoading('submitSolutionBtn');
@@ -947,7 +973,7 @@ console.log(\`Passed: \${results.filter(r => r.passed).length}/\${results.length
       // Simulate solution validation
       const isCorrect = await this.validateSolution(code, question);
       const endTime = new Date();
-      const timeSpent = Math.floor((endTime - startTime) / 1000);
+      const timeSpent = Math.max(0, Math.floor((endTime - questionStart) / 1000));
 
       // Record result
       const result = {
@@ -1374,15 +1400,84 @@ console.log(\`Passed: \${results.filter(r => r.passed).length}/\${results.length
     });
   }
 
-  stopSession() {
-    if (confirm('Are you sure you want to stop this session? Your progress will be lost.')) {
+  async showConfirmModal(title, message, type = 'warning') {
+    return new Promise((resolve) => {
+      const modal = document.getElementById('confirmModal');
+      const titleEl = document.getElementById('confirmModalTitle');
+      const messageEl = document.getElementById('confirmModalMessage');
+      const cancelBtn = document.getElementById('confirmModalCancel');
+      const confirmBtn = document.getElementById('confirmModalConfirm');
+      
+      // Set content
+      titleEl.textContent = title;
+      messageEl.textContent = message;
+      
+      // Set modal type
+      modal.classList.remove('danger');
+      if (type === 'danger') {
+        modal.classList.add('danger');
+      }
+      
+      // Show modal
+      modal.style.display = 'flex';
+      
+      // Remove existing listeners
+      const newCancelBtn = cancelBtn.cloneNode(true);
+      const newConfirmBtn = confirmBtn.cloneNode(true);
+      cancelBtn.parentNode.replaceChild(newCancelBtn, cancelBtn);
+      confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+      
+      // Add new listeners
+      newCancelBtn.addEventListener('click', () => {
+        modal.style.display = 'none';
+        resolve(false);
+      });
+      
+      newConfirmBtn.addEventListener('click', () => {
+        modal.style.display = 'none';
+        resolve(true);
+      });
+      
+      // Close on overlay click
+      const overlay = modal.querySelector('.confirm-modal-overlay');
+      overlay.addEventListener('click', () => {
+        modal.style.display = 'none';
+        resolve(false);
+      });
+      
+      // Close on Escape key
+      const handleEscape = (e) => {
+        if (e.key === 'Escape') {
+          modal.style.display = 'none';
+          document.removeEventListener('keydown', handleEscape);
+          resolve(false);
+        }
+      };
+      document.addEventListener('keydown', handleEscape);
+    });
+  }
+
+  async stopSession() {
+    const confirmed = await this.showConfirmModal(
+      'Stop Session',
+      'Are you sure you want to stop this session? Your progress will be lost.',
+      'danger'
+    );
+    
+    if (confirmed) {
       this.endSession();
     }
   }
 
-  resetSession() {
+  async resetSession() {
     // Ask user if they want to go to dashboard or start new session
-    if (confirm('Would you like to view your updated progress on the dashboard?')) {
+    const goToDashboard = await this.showConfirmModal(
+      'View Progress?',
+      'Would you like to view your updated progress on the dashboard?',
+      'warning'
+    );
+    
+    if (goToDashboard) {
       window.location.href = 'dashboard.html';
     } else {
       document.getElementById('sessionResults').style.display = 'none';
