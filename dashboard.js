@@ -1,17 +1,64 @@
 // Dashboard System for AI Interviewer
 class DashboardSystem {
   constructor() {
-    this.backend = new BackendSimulator();
     this.currentUser = null;
     this.userStats = null;
     this.progressChart = null;
     
     this.initializeEventListeners();
     this.checkAuthentication();
+    
+    // Reload data when page becomes visible (user returns from practice)
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden && this.currentUser) {
+        console.log('Page visible again, reloading dashboard data');
+        this.loadDashboardData();
+      }
+    });
+    
+    // Also reload on page focus
+    window.addEventListener('focus', () => {
+      if (this.currentUser) {
+        console.log('Window focused, reloading dashboard data');
+        this.loadDashboardData();
+      }
+    });
+    
+    // Reload when page is shown (includes back/forward navigation)
+    window.addEventListener('pageshow', (event) => {
+      if (event.persisted || (this.currentUser && document.visibilityState === 'visible')) {
+        console.log('Page shown, reloading dashboard data');
+        this.loadDashboardData();
+      }
+    });
+    
+    // Check if we're returning from practice page
+    const returningFromPractice = sessionStorage.getItem('returningFromPractice');
+    if (returningFromPractice) {
+      sessionStorage.removeItem('returningFromPractice');
+      console.log('Returning from practice, refreshing dashboard data');
+      setTimeout(() => this.loadDashboardData(), 500);
+    }
+    
     this.loadDashboardData();
   }
 
   async checkAuthentication() {
+    // Prefer Supabase session
+    if (window.getSupabaseUser && window.supabaseClient) {
+      const user = await window.getSupabaseUser();
+      if (!user) {
+        this.showNotification('Please log in to view your dashboard.', 'warning');
+        setTimeout(() => {
+          window.location.href = 'login.html';
+        }, 2000);
+        return;
+      }
+      this.currentUser = this.mapSupabaseUser(user);
+      return;
+    }
+
+    // Fallback to legacy local session
     const userData = localStorage.getItem('ai_interviewer_user');
     if (!userData) {
       this.showNotification('Please log in to view your dashboard.', 'warning');
@@ -20,8 +67,18 @@ class DashboardSystem {
       }, 2000);
       return;
     }
-    
     this.currentUser = JSON.parse(userData);
+  }
+
+  mapSupabaseUser(user) {
+    const meta = user.user_metadata || {};
+    return {
+      id: user.id,
+      email: user.email,
+      username: meta.username || (user.email ? user.email.split('@')[0] : ''),
+      firstName: meta.firstName || '',
+      lastName: meta.lastName || ''
+    };
   }
 
   initializeEventListeners() {
@@ -44,19 +101,119 @@ class DashboardSystem {
   }
 
   async loadDashboardData() {
-    if (!this.currentUser) return;
+    if (!this.currentUser) {
+      console.log('No current user, cannot load dashboard data');
+      return;
+    }
 
     try {
       this.showLoading();
       
-      // Load user statistics
-      this.userStats = await this.backend.getUserStats(this.currentUser.id);
+      // Wait for Supabase client and DB to be ready
+      let waitCount = 0;
+      while ((!window.supabaseClient || !window.supabaseDB) && waitCount < 50) {
+        await new Promise(resolve => setTimeout(resolve, 100));
+        waitCount++;
+      }
+
+      let userStats, userProgress, userSessions;
       
-      // Load user progress
-      const userProgress = await this.backend.getUserProgress(this.currentUser.id);
+      // Get user ID from Supabase session or currentUser
+      let userId = this.currentUser.id;
+      if (window.supabaseClient) {
+        try {
+          const { data: { user } } = await window.supabaseClient.auth.getUser();
+          if (user?.id) {
+            userId = user.id;
+            // Update currentUser with Supabase user ID if different
+            if (this.currentUser.id !== userId) {
+              this.currentUser.id = userId;
+            }
+          }
+        } catch (error) {
+          console.warn('Could not get user from Supabase session, using currentUser:', error);
+        }
+      }
+
+      // Try Express backend first, then Supabase, then empty data
+      if (window.backendAPI) {
+        try {
+          console.log('Loading data from Express backend for user:', userId);
+          
+          // Load from Express backend
+          userStats = await window.backendAPI.getStats(userId);
+          userProgress = await window.backendAPI.getProgress(userId);
+          userSessions = await window.backendAPI.getSessions(userId);
+          
+          console.log('Backend API data loaded:', { 
+            stats: userStats, 
+            progressCount: userProgress.length, 
+            sessionsCount: userSessions.length 
+          });
+        } catch (backendError) {
+          console.warn('Backend API error, trying Supabase:', backendError);
+          
+          // Fallback to Supabase
+          if (window.supabaseClient && window.supabaseDB) {
+            try {
+              console.log('Loading data from Supabase for user:', userId);
+              
+              userStats = await window.supabaseDB.getUserStats(userId);
+              userProgress = await window.supabaseDB.getUserProgress(userId);
+              userSessions = await window.supabaseDB.getUserSessions(userId);
+              
+              console.log('Supabase data loaded:', { 
+                stats: userStats, 
+                progressCount: userProgress.length, 
+                sessionsCount: userSessions.length 
+              });
+            } catch (supabaseError) {
+              console.error('Supabase error loading data:', supabaseError);
+              userStats = { totalSolved: 0, totalTime: 0, accuracy: 0, streak: 0, progress: [] };
+              userProgress = [];
+              userSessions = [];
+              console.log('Using empty data (databases not available)');
+            }
+          } else {
+            userStats = { totalSolved: 0, totalTime: 0, accuracy: 0, streak: 0, progress: [] };
+            userProgress = [];
+            userSessions = [];
+            console.log('Using empty data (no backend available)');
+          }
+        }
+      } else if (window.supabaseClient && window.supabaseDB) {
+        try {
+          console.log('Loading data from Supabase for user:', userId);
+          
+          userStats = await window.supabaseDB.getUserStats(userId);
+          userProgress = await window.supabaseDB.getUserProgress(userId);
+          userSessions = await window.supabaseDB.getUserSessions(userId);
+          
+          console.log('Supabase data loaded:', { 
+            stats: userStats, 
+            progressCount: userProgress.length, 
+            sessionsCount: userSessions.length 
+          });
+        } catch (supabaseError) {
+          console.error('Supabase error loading data:', supabaseError);
+          userStats = { totalSolved: 0, totalTime: 0, accuracy: 0, streak: 0, progress: [] };
+          userProgress = [];
+          userSessions = [];
+          console.log('Using empty data (Supabase tables may not be set up)');
+        }
+      } else {
+        console.log('No backend available, using empty data');
+        userStats = { totalSolved: 0, totalTime: 0, accuracy: 0, streak: 0, progress: [] };
+        userProgress = [];
+        userSessions = [];
+      }
       
-      // Load user sessions
-      const userSessions = await this.backend.getUserSessions(this.currentUser.id);
+      // Ensure we have valid data
+      userStats = userStats || { totalSolved: 0, totalTime: 0, accuracy: 0, streak: 0, progress: [] };
+      userProgress = userProgress || [];
+      userSessions = userSessions || [];
+      
+      this.userStats = userStats;
       
       // Update dashboard with data
       this.updateStatsCards();
@@ -65,30 +222,66 @@ class DashboardSystem {
       this.updateRecentActivity(userSessions);
       this.updateGoals();
       
+      console.log('Dashboard updated with real data:', userStats);
+      
     } catch (error) {
-      this.showNotification('Error loading dashboard data: ' + error.message, 'error');
+      console.error('Dashboard load error:', error);
+      // On error, show empty state instead of mock data
+      this.userStats = { totalSolved: 0, totalTime: 0, accuracy: 0, streak: 0, progress: [] };
+      this.updateStatsCards();
+      this.updateProgressChart([]);
+      this.updateTopicPerformance([]);
+      this.updateRecentActivity([]);
+      this.updateGoals();
+      this.showNotification('No practice data yet. Complete some sessions to see your stats!', 'info');
     } finally {
       this.hideLoading();
     }
   }
 
   updateStatsCards() {
-    if (!this.userStats) return;
+    console.log('updateStatsCards called with stats:', this.userStats);
+    
+    // Get elements
+    const streakEl = document.getElementById('streakCount');
+    const solvedEl = document.getElementById('totalSolved');
+    const timeEl = document.getElementById('totalTime');
+    const accuracyEl = document.getElementById('accuracy');
+    
+    if (!streakEl || !solvedEl || !timeEl || !accuracyEl) {
+      console.error('Stats card elements not found!');
+      return;
+    }
+    
+    if (!this.userStats) {
+      // Show zeros if no stats
+      streakEl.textContent = '0';
+      solvedEl.textContent = '0';
+      timeEl.textContent = '0h 0m';
+      accuracyEl.textContent = '0%';
+      console.log('No stats available, showing zeros');
+      return;
+    }
 
     // Update streak
-    document.getElementById('streakCount').textContent = this.userStats.streak || 0;
+    const streak = this.userStats.streak || 0;
+    streakEl.textContent = streak;
     
     // Update total solved
-    document.getElementById('totalSolved').textContent = this.userStats.totalSolved || 0;
+    const totalSolved = this.userStats.totalSolved || 0;
+    solvedEl.textContent = totalSolved;
     
     // Update total time
     const totalTime = this.userStats.totalTime || 0;
     const hours = Math.floor(totalTime / 3600);
     const minutes = Math.floor((totalTime % 3600) / 60);
-    document.getElementById('totalTime').textContent = `${hours}h ${minutes}m`;
+    timeEl.textContent = `${hours}h ${minutes}m`;
     
     // Update accuracy
-    document.getElementById('accuracy').textContent = `${this.userStats.accuracy || 0}%`;
+    const accuracy = this.userStats.accuracy || 0;
+    accuracyEl.textContent = `${accuracy}%`;
+    
+    console.log('Stats cards updated:', { streak, totalSolved, totalTime, accuracy });
   }
 
   updateProgressChart(sessions) {
@@ -157,15 +350,23 @@ class DashboardSystem {
   prepareDailyData(sessions, dates) {
     const dailyData = new Array(7).fill(0);
     
+    if (!sessions || sessions.length === 0) {
+      return dailyData; // Return all zeros if no sessions
+    }
+    
     sessions.forEach(session => {
-      if (session.status === 'completed' && session.endTime) {
+      if (session.status === 'completed' && session.endTime && session.results) {
         const sessionDate = new Date(session.endTime);
-        const dayIndex = dates.findIndex(date => 
-          date.toDateString() === sessionDate.toDateString()
-        );
+        const dayIndex = dates.findIndex(date => {
+          const sessionDay = new Date(sessionDate);
+          sessionDay.setHours(0, 0, 0, 0);
+          const compareDay = new Date(date);
+          compareDay.setHours(0, 0, 0, 0);
+          return sessionDay.getTime() === compareDay.getTime();
+        });
         
         if (dayIndex !== -1) {
-          const correctAnswers = session.results.filter(r => r.isCorrect).length;
+          const correctAnswers = session.results.filter(r => r.isCorrect === true).length;
           dailyData[dayIndex] += correctAnswers;
         }
       }
@@ -175,11 +376,20 @@ class DashboardSystem {
   }
 
   updateTopicPerformance(userProgress) {
-    const topicsGrid = document.querySelector('.topics-grid');
-    if (!topicsGrid) return;
+    const topicsGrid = document.getElementById('topicsGrid') || document.querySelector('.topics-grid');
+    if (!topicsGrid) {
+      console.error('Topics grid not found');
+      return;
+    }
 
     // Clear existing content
     topicsGrid.innerHTML = '';
+
+    // Handle empty progress
+    if (!userProgress || userProgress.length === 0) {
+      topicsGrid.innerHTML = '<div style="text-align: center; color: #666; padding: 2rem;">Start practicing to see your topic performance here!</div>';
+      return;
+    }
 
     // Group progress by topic
     const topicStats = {};
@@ -192,8 +402,8 @@ class DashboardSystem {
         };
       }
       
-      topicStats[progress.topic].totalAttempted += progress.totalAttempted;
-      topicStats[progress.topic].totalCorrect += progress.totalCorrect;
+      topicStats[progress.topic].totalAttempted += (progress.totalAttempted || 0);
+      topicStats[progress.topic].totalCorrect += (progress.totalCorrect || 0);
     });
 
     // Calculate accuracy for each topic
@@ -212,6 +422,7 @@ class DashboardSystem {
       'trees': { icon: 'fa-sitemap', name: 'Trees' }
     };
 
+    // Show all topics, even if no progress
     Object.keys(topicConfig).forEach(topic => {
       const config = topicConfig[topic];
       const stats = topicStats[topic] || { totalAttempted: 0, totalCorrect: 0, accuracy: 0 };
@@ -244,17 +455,22 @@ class DashboardSystem {
     if (!activityList) return;
 
     // Get recent sessions (last 5)
-    const recentSessions = sessions
-      .filter(session => session.status === 'completed')
+    const recentSessions = (sessions || [])
+      .filter(session => session.status === 'completed' && session.endTime && session.results)
       .sort((a, b) => new Date(b.endTime) - new Date(a.endTime))
       .slice(0, 5);
 
     activityList.innerHTML = '';
 
+    if (recentSessions.length === 0) {
+      activityList.innerHTML = '<div class="activity-item"><p style="text-align: center; color: #666;">No recent activity. Start practicing to see your progress here!</p></div>';
+      return;
+    }
+
     recentSessions.forEach(session => {
-      const correctAnswers = session.results.filter(r => r.isCorrect).length;
-      const totalQuestions = session.results.length;
-      const timeSpent = Math.floor(session.totalTime / 60);
+      const correctAnswers = session.results.filter(r => r.isCorrect === true).length;
+      const totalQuestions = session.results.length || 0;
+      const timeSpent = session.totalTime ? Math.floor(session.totalTime / 60) : 0;
       
       const activityItem = document.createElement('div');
       activityItem.className = 'activity-item';
@@ -295,7 +511,13 @@ class DashboardSystem {
       
       const goalContent = goalItems[0].querySelector('.goal-content p');
       if (goalContent) {
-        goalContent.textContent = `You're ${Math.round(progress)}% of the way there!`;
+        if (totalSolved === 0) {
+          goalContent.textContent = 'Start practicing to track your progress!';
+        } else if (progress >= 100) {
+          goalContent.textContent = 'Goal achieved! Great work!';
+        } else {
+          goalContent.textContent = `You're ${Math.round(progress)}% of the way there!`;
+        }
       }
     }
 
@@ -314,6 +536,8 @@ class DashboardSystem {
       if (goalContent) {
         if (currentStreak >= targetStreak) {
           goalContent.textContent = 'Goal achieved! Keep it up!';
+        } else if (currentStreak === 0) {
+          goalContent.textContent = 'Start a practice session to begin your streak!';
         } else {
           goalContent.textContent = `Keep it up! You're on day ${currentStreak}.`;
         }
@@ -333,7 +557,9 @@ class DashboardSystem {
       
       const goalContent = goalItems[2].querySelector('.goal-content p');
       if (goalContent) {
-        if (currentAccuracy >= targetAccuracy) {
+        if (currentAccuracy === 0) {
+          goalContent.textContent = 'Complete some practice sessions to track accuracy!';
+        } else if (currentAccuracy >= targetAccuracy) {
           goalContent.textContent = 'Excellent accuracy! Keep it up!';
         } else {
           goalContent.textContent = `Focus on accuracy to reach ${targetAccuracy}%.`;
