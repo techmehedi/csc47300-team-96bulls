@@ -227,12 +227,19 @@ button:active {
 }
 
 .nav-container {
-  max-width: 1100px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 14px 20px;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 20px;
+}
+
+@media (min-width: 1024px) {
+  .nav-container {
+    gap: 40px;
+  }
 }
 
 .brand {
@@ -352,7 +359,57 @@ button:active {
 .site-nav {
   display: flex;
   align-items: center;
-  gap: 18px;
+  gap: 10px;
+  flex-wrap: wrap;
+  flex: 1;
+  justify-content: flex-end;
+}
+
+/* Add visual separator before first button link (Dashboard or Practice) */
+.site-nav > a[href*="dashboard"]:first-of-type,
+.site-nav > a[href*="practice"]:first-of-type {
+  margin-left: 20px;
+  position: relative;
+}
+
+.site-nav > a[href*="dashboard"]:first-of-type::before,
+.site-nav > a[href*="practice"]:first-of-type::before {
+  content: '';
+  position: absolute;
+  left: -14px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1px;
+  height: 24px;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* Consistent spacing for button group */
+.site-nav .login-link {
+  margin-left: 0;
+}
+
+.site-nav .logout-btn {
+  margin-left: 0;
+}
+
+.site-nav::before {
+  content: '';
+  display: none;
+}
+
+.site-nav .nav-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.site-nav .nav-separator {
+  width: 1px;
+  height: 24px;
+  background: rgba(255, 255, 255, 0.2);
+  margin: 0 4px;
+  display: none;
 }
 
 .site-nav a {
@@ -366,6 +423,20 @@ button:active {
   cursor: pointer;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
+  white-space: nowrap;
+}
+
+/* Regular text links (Home, About, Services, Contact) */
+.site-nav a:not(.login-link):not(.logout-btn):not([href*="dashboard"]):not([href*="practice"]):not(.btn):not(.active) {
+  padding: 10px 14px;
+}
+
+/* Active link in nav (like Dashboard when on dashboard page) */
+.site-nav a.active[href*="dashboard"] {
+  background: var(--gradient-primary);
+  color: #fff;
+  font-weight: 600;
+  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
 }
 
 .site-nav a::before {
@@ -402,19 +473,29 @@ button:active {
   box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
 }
 
-.site-nav .login-link { 
+.site-nav .login-link,
+.site-nav a[href*="dashboard"],
+.site-nav a[href*="practice"],
+.site-nav a.btn.primary { 
   background: var(--gradient-primary);
   color: #fff;
-  padding: 10px 20px;
+  padding: 10px 18px;
   box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+  font-weight: 600;
 }
 
-.site-nav .login-link:hover { 
+.site-nav .login-link:hover,
+.site-nav a[href*="dashboard"]:hover,
+.site-nav a[href*="practice"]:hover,
+.site-nav a.btn.primary:hover { 
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5);
 }
 
-.site-nav .login-link:active {
+.site-nav .login-link:active,
+.site-nav a[href*="dashboard"]:active,
+.site-nav a[href*="practice"]:active,
+.site-nav a.btn.primary:active {
   transform: translateY(0) scale(0.95);
   box-shadow: 0 2px 10px rgba(99, 102, 241, 0.4);
 }
@@ -422,7 +503,7 @@ button:active {
 .site-nav .logout-btn {
   background: rgba(239, 68, 68, 0.9);
   color: #fff;
-  padding: 10px 16px;
+  padding: 10px 18px;
   border-radius: 12px;
   text-decoration: none;
   font-weight: 600;
@@ -802,15 +883,17 @@ button:active {
 }
 
 .question-example pre {
-  background: #1e293b;
-  color: #e2e8f0;
-  padding: 12px;
-  border-radius: 6px;
+  background: #0b1220;
+  color: #e6edf3;
+  padding: 16px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
   font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-  font-size: 0.85rem;
-  line-height: 1.4;
+  font-size: 0.95rem;
+  line-height: 1.6;
   overflow-x: auto;
   margin: 0;
+  box-shadow: 0 8px 30px rgba(2, 6, 23, 0.35);
 }
 
 .question-actions {
@@ -843,8 +926,8 @@ button:active {
 }
 
 .solution-display {
-  background: rgba(34, 197, 94, 0.15);
-  border-color: rgba(34, 197, 94, 0.4);
+  background: rgba(15, 23, 42, 0.6);
+  border-color: rgba(255, 255, 255, 0.18);
 }
 
 .solution-display::before {
@@ -897,15 +980,17 @@ button:active {
 }
 
 .solution-display pre {
-  background: #1e293b;
-  color: #e2e8f0;
-  padding: 12px;
-  border-radius: 6px;
+  background: #0b1220;
+  color: #e6edf3;
+  padding: 18px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
   font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-  font-size: 0.85rem;
-  line-height: 1.4;
+  font-size: 0.95rem;
+  line-height: 1.6;
   overflow-x: auto;
   margin: 0;
+  box-shadow: 0 8px 30px rgba(2, 6, 23, 0.35);
 }
 
 /* Enhanced form styles */
@@ -2629,6 +2714,195 @@ textarea {
   
   .loader-text {
     font-size: 0.95rem;
+  }
+}
+
+/* Custom Confirmation Modal */
+.confirm-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.2s ease forwards;
+}
+
+.confirm-modal-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.confirm-modal-content {
+  position: relative;
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 24px;
+  padding: 0;
+  max-width: 480px;
+  width: 90%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  transform: scale(0.9);
+  animation: modalSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  overflow: hidden;
+}
+
+@keyframes modalSlideIn {
+  from {
+    transform: scale(0.9) translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+
+.confirm-modal-content::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--gradient-primary);
+}
+
+.confirm-modal-header {
+  padding: 32px 32px 20px;
+  text-align: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.confirm-modal-header i {
+  font-size: 3rem;
+  color: #fbbf24;
+  margin-bottom: 16px;
+  display: block;
+  text-shadow: 0 0 20px rgba(251, 191, 36, 0.5);
+}
+
+.confirm-modal-header h3 {
+  color: #ffffff;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.confirm-modal-body {
+  padding: 24px 32px;
+}
+
+.confirm-modal-body p {
+  color: #e2e8f0;
+  font-size: 1.05rem;
+  line-height: 1.6;
+  margin: 0;
+  text-align: center;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+}
+
+.confirm-modal-footer {
+  padding: 20px 32px 32px;
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.confirm-modal-footer .btn-secondary {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 1rem;
+}
+
+.confirm-modal-footer .btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+.confirm-modal-footer .btn-secondary:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.confirm-modal-footer .btn-primary {
+  background: var(--gradient-primary);
+  color: #ffffff;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 1rem;
+  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+}
+
+.confirm-modal-footer .btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.6);
+}
+
+.confirm-modal-footer .btn-primary:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.confirm-modal.danger .confirm-modal-header i {
+  color: #ef4444;
+  text-shadow: 0 0 20px rgba(239, 68, 68, 0.5);
+}
+
+.confirm-modal.danger .confirm-modal-content::before {
+  background: linear-gradient(90deg, #ef4444 0%, #dc2626 100%);
+}
+
+.confirm-modal.danger .confirm-modal-footer .btn-primary {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+}
+
+.confirm-modal.danger .confirm-modal-footer .btn-primary:hover {
+  box-shadow: 0 6px 20px rgba(239, 68, 68, 0.6);
+}
+
+/* Responsive modal */
+@media (max-width: 480px) {
+  .confirm-modal-content {
+    width: 95%;
+    max-width: none;
+  }
+  
+  .confirm-modal-header,
+  .confirm-modal-body,
+  .confirm-modal-footer {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+  
+  .confirm-modal-footer {
+    flex-direction: column;
+  }
+  
+  .confirm-modal-footer button {
+    width: 100%;
   }
 }
 
