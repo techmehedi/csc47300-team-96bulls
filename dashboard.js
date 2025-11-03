@@ -107,12 +107,17 @@ class DashboardSystem {
     }
 
     try {
+      // Show immediate empty states first
+      this.updateProgressChart([]);
+      this.updateTopicPerformance([]);
+      this.updateRecentActivity([]);
+      
       this.showLoading();
       
-      // Wait for Supabase client and DB to be ready
+      // Wait for Supabase client and DB to be ready (reduced wait time)
       let waitCount = 0;
-      while ((!window.supabaseClient || !window.supabaseDB) && waitCount < 50) {
-        await new Promise(resolve => setTimeout(resolve, 100));
+      while ((!window.supabaseClient || !window.supabaseDB) && waitCount < 20) {
+        await new Promise(resolve => setTimeout(resolve, 50));
         waitCount++;
       }
 
@@ -140,10 +145,25 @@ class DashboardSystem {
         try {
           console.log('Loading data from Express backend for user:', userId);
           
-          // Load from Express backend
-          userStats = await window.backendAPI.getStats(userId);
-          userProgress = await window.backendAPI.getProgress(userId);
-          userSessions = await window.backendAPI.getSessions(userId);
+          // Load from Express backend in parallel for faster loading
+          const [statsData, progressData, sessionsData] = await Promise.allSettled([
+            window.backendAPI.getStats(userId),
+            window.backendAPI.getProgress(userId),
+            window.backendAPI.getSessions(userId)
+          ]);
+          
+          userStats = statsData.status === 'fulfilled' ? statsData.value : null;
+          userProgress = progressData.status === 'fulfilled' ? progressData.value : [];
+          userSessions = sessionsData.status === 'fulfilled' ? sessionsData.value : [];
+          
+          // Update sections as data arrives
+          if (sessionsData.status === 'fulfilled' && userSessions) {
+            this.updateProgressChart(userSessions);
+            this.updateRecentActivity(userSessions);
+          }
+          if (progressData.status === 'fulfilled' && userProgress) {
+            this.updateTopicPerformance(userProgress);
+          }
           
           console.log('Backend API data loaded:', { 
             stats: userStats, 
@@ -158,9 +178,25 @@ class DashboardSystem {
             try {
               console.log('Loading data from Supabase for user:', userId);
               
-              userStats = await window.supabaseDB.getUserStats(userId);
-              userProgress = await window.supabaseDB.getUserProgress(userId);
-              userSessions = await window.supabaseDB.getUserSessions(userId);
+              // Load from Supabase in parallel for faster loading
+              const [statsData, progressData, sessionsData] = await Promise.allSettled([
+                window.supabaseDB.getUserStats(userId),
+                window.supabaseDB.getUserProgress(userId),
+                window.supabaseDB.getUserSessions(userId)
+              ]);
+              
+              userStats = statsData.status === 'fulfilled' ? statsData.value : null;
+              userProgress = progressData.status === 'fulfilled' ? progressData.value : [];
+              userSessions = sessionsData.status === 'fulfilled' ? sessionsData.value : [];
+              
+              // Update sections as data arrives
+              if (sessionsData.status === 'fulfilled' && userSessions) {
+                this.updateProgressChart(userSessions);
+                this.updateRecentActivity(userSessions);
+              }
+              if (progressData.status === 'fulfilled' && userProgress) {
+                this.updateTopicPerformance(userProgress);
+              }
               
               console.log('Supabase data loaded:', { 
                 stats: userStats, 
@@ -185,9 +221,25 @@ class DashboardSystem {
         try {
           console.log('Loading data from Supabase for user:', userId);
           
-          userStats = await window.supabaseDB.getUserStats(userId);
-          userProgress = await window.supabaseDB.getUserProgress(userId);
-          userSessions = await window.supabaseDB.getUserSessions(userId);
+          // Load from Supabase in parallel for faster loading
+          const [statsData, progressData, sessionsData] = await Promise.allSettled([
+            window.supabaseDB.getUserStats(userId),
+            window.supabaseDB.getUserProgress(userId),
+            window.supabaseDB.getUserSessions(userId)
+          ]);
+          
+          userStats = statsData.status === 'fulfilled' ? statsData.value : null;
+          userProgress = progressData.status === 'fulfilled' ? progressData.value : [];
+          userSessions = sessionsData.status === 'fulfilled' ? sessionsData.value : [];
+          
+          // Update sections as data arrives
+          if (sessionsData.status === 'fulfilled' && userSessions) {
+            this.updateProgressChart(userSessions);
+            this.updateRecentActivity(userSessions);
+          }
+          if (progressData.status === 'fulfilled' && userProgress) {
+            this.updateTopicPerformance(userProgress);
+          }
           
           console.log('Supabase data loaded:', { 
             stats: userStats, 
@@ -215,7 +267,7 @@ class DashboardSystem {
       
       this.userStats = userStats;
       
-      // Update dashboard with data
+      // Update dashboard with data (only update if not already updated during loading)
       this.updateStatsCards();
       this.updateProgressChart(userSessions);
       this.updateTopicPerformance(userProgress);
@@ -286,15 +338,19 @@ class DashboardSystem {
 
   updateProgressChart(sessions) {
     const ctx = document.getElementById('progressChart');
-    if (!ctx) return;
+    if (!ctx) {
+      // Chart canvas not ready yet, skip
+      return;
+    }
 
     // Prepare data for the last 7 days
     const last7Days = this.getLast7Days();
-    const dailyData = this.prepareDailyData(sessions, last7Days);
+    const dailyData = this.prepareDailyData(sessions || [], last7Days);
 
     // Destroy existing chart if it exists
     if (this.progressChart) {
       this.progressChart.destroy();
+      this.progressChart = null;
     }
 
     this.progressChart = new Chart(ctx, {
@@ -385,35 +441,7 @@ class DashboardSystem {
     // Clear existing content
     topicsGrid.innerHTML = '';
 
-    // Handle empty progress
-    if (!userProgress || userProgress.length === 0) {
-      topicsGrid.innerHTML = '<div style="text-align: center; color: #666; padding: 2rem;">Start practicing to see your topic performance here!</div>';
-      return;
-    }
-
-    // Group progress by topic
-    const topicStats = {};
-    userProgress.forEach(progress => {
-      if (!topicStats[progress.topic]) {
-        topicStats[progress.topic] = {
-          totalAttempted: 0,
-          totalCorrect: 0,
-          accuracy: 0
-        };
-      }
-      
-      topicStats[progress.topic].totalAttempted += (progress.totalAttempted || 0);
-      topicStats[progress.topic].totalCorrect += (progress.totalCorrect || 0);
-    });
-
-    // Calculate accuracy for each topic
-    Object.keys(topicStats).forEach(topic => {
-      const stats = topicStats[topic];
-      stats.accuracy = stats.totalAttempted > 0 ? 
-        Math.round((stats.totalCorrect / stats.totalAttempted) * 100) : 0;
-    });
-
-    // Create topic cards
+    // Define topic configuration
     const topicConfig = {
       'arrays': { icon: 'fa-list', name: 'Arrays' },
       'strings': { icon: 'fa-font', name: 'Strings' },
@@ -421,6 +449,33 @@ class DashboardSystem {
       'dynamic-programming': { icon: 'fa-brain', name: 'Dynamic Programming' },
       'trees': { icon: 'fa-sitemap', name: 'Trees' }
     };
+
+    // Initialize topic stats with default values
+    const topicStats = {};
+    Object.keys(topicConfig).forEach(topic => {
+      topicStats[topic] = {
+        totalAttempted: 0,
+        totalCorrect: 0,
+        accuracy: 0
+      };
+    });
+
+    // If we have progress data, aggregate it by topic
+    if (userProgress && userProgress.length > 0) {
+      userProgress.forEach(progress => {
+        if (topicStats[progress.topic]) {
+          topicStats[progress.topic].totalAttempted += (progress.totalAttempted || 0);
+          topicStats[progress.topic].totalCorrect += (progress.totalCorrect || 0);
+        }
+      });
+    }
+
+    // Calculate accuracy for each topic
+    Object.keys(topicStats).forEach(topic => {
+      const stats = topicStats[topic];
+      stats.accuracy = stats.totalAttempted > 0 ? 
+        Math.round((stats.totalCorrect / stats.totalAttempted) * 100) : 0;
+    });
 
     // Show all topics, even if no progress
     Object.keys(topicConfig).forEach(topic => {
@@ -454,16 +509,16 @@ class DashboardSystem {
     const activityList = document.getElementById('activityList');
     if (!activityList) return;
 
+    activityList.innerHTML = '';
+
     // Get recent sessions (last 5)
     const recentSessions = (sessions || [])
       .filter(session => session.status === 'completed' && session.endTime && session.results)
       .sort((a, b) => new Date(b.endTime) - new Date(a.endTime))
       .slice(0, 5);
 
-    activityList.innerHTML = '';
-
     if (recentSessions.length === 0) {
-      activityList.innerHTML = '<div class="activity-item"><p style="text-align: center; color: #666;">No recent activity. Start practicing to see your progress here!</p></div>';
+      activityList.innerHTML = '<div class="activity-item"><div class="activity-content"><p style="text-align: center; color: #e2e8f0;">No recent activity. Start practicing to see your progress here!</p></div></div>';
       return;
     }
 
