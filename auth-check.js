@@ -2,6 +2,43 @@
 (async function() {
   let authStateListener = null;
 
+  // Helper function to add logout button
+  function addLogoutButton(profileLink) {
+    // Check if logout button already exists
+    if (profileLink.parentElement.querySelector('.logout-btn')) {
+      return;
+    }
+
+    // Create logout button
+    const logoutBtn = document.createElement('a');
+    logoutBtn.className = 'logout-btn';
+    logoutBtn.href = '#';
+    logoutBtn.innerHTML = '<i class="fa-solid fa-sign-out-alt"></i> Logout';
+    logoutBtn.addEventListener('click', async (e) => {
+      e.preventDefault();
+      try {
+        // Sign out from Supabase if available
+        if (window.supabaseClient) {
+          await window.supabaseClient.auth.signOut();
+        }
+        // Clear local storage
+        localStorage.removeItem('ai_interviewer_user');
+        localStorage.removeItem('ai_interviewer_remember');
+        // Redirect to home page
+        window.location.href = 'index.html';
+      } catch (error) {
+        console.error('Logout error:', error);
+        // Still redirect even if there's an error
+        localStorage.removeItem('ai_interviewer_user');
+        localStorage.removeItem('ai_interviewer_remember');
+        window.location.href = 'index.html';
+      }
+    });
+
+    // Insert logout button after profile link
+    profileLink.parentElement.insertBefore(logoutBtn, profileLink.nextSibling);
+  }
+
   async function updateAuthStatus() {
     // Wait for Supabase client to be available (up to 5 seconds)
     let waitCount = 0;
@@ -20,6 +57,9 @@
           loginLinks.forEach(link => {
             link.innerHTML = `<i class="fa-regular fa-user"></i> ${user.firstName || 'Profile'}`;
             link.href = 'dashboard.html';
+            
+            // Add logout button
+            addLogoutButton(link);
           });
         } catch (e) {
           console.error('Error parsing user data:', e);
@@ -57,6 +97,9 @@
         loginLinks.forEach(link => {
           link.innerHTML = `<i class="fa-regular fa-user"></i> ${currentUser.firstName || 'Profile'}`;
           link.href = 'dashboard.html';
+          
+          // Add logout button
+          addLogoutButton(link);
         });
       } else {
         // No session - check if we have cached user data first
@@ -70,6 +113,9 @@
               link.href = 'login.html';
             }
           });
+          
+          // Remove logout buttons
+          document.querySelectorAll('.logout-btn').forEach(btn => btn.remove());
         }
       }
     } catch (error) {
@@ -87,6 +133,9 @@
           updateAuthStatus();
         } else if (event === 'SIGNED_OUT') {
           localStorage.removeItem('ai_interviewer_user');
+          localStorage.removeItem('ai_interviewer_remember');
+          // Remove logout buttons
+          document.querySelectorAll('.logout-btn').forEach(btn => btn.remove());
           updateAuthStatus();
         }
       });
