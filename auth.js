@@ -52,9 +52,33 @@ class AuthenticationSystem {
   updateNavigationForLoggedInUser() {
     const loginLinks = document.querySelectorAll('.login-link');
     loginLinks.forEach(link => {
-      link.innerHTML = `<i class="fa-regular fa-user"></i> ${this.currentUser.firstName}`;
+      const userName = this.currentUser.firstName || this.currentUser.username || 'Profile';
+      link.innerHTML = `<i class="fa-regular fa-user"></i> ${userName}`;
       link.href = 'dashboard.html';
+      
+      // Add logout button next to profile link
+      this.addLogoutButton(link);
     });
+  }
+
+  addLogoutButton(profileLink) {
+    // Check if logout button already exists
+    if (profileLink.parentElement.querySelector('.logout-btn')) {
+      return;
+    }
+
+    // Create logout button
+    const logoutBtn = document.createElement('a');
+    logoutBtn.className = 'logout-btn';
+    logoutBtn.href = '#';
+    logoutBtn.innerHTML = '<i class="fa-solid fa-sign-out-alt"></i> Logout';
+    logoutBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      this.logout();
+    });
+
+    // Insert logout button after profile link
+    profileLink.parentElement.insertBefore(logoutBtn, profileLink.nextSibling);
   }
 
   async handleLogin(e) {
