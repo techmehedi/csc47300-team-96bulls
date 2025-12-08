@@ -7,23 +7,39 @@
   "scripts": {
     "start": "node backend/server.js",
     "dev": "nodemon backend/server.js",
+    "client": "vite",
+    "client:build": "vite build",
+    "client:preview": "vite preview",
+    "full": "concurrently \"npm run dev\" \"npm run client\"",
     "ts:build": "tsc -p tsconfig.json"
   },
-  "keywords": ["express", "api", "interviewer"],
+  "keywords": [
+    "express",
+    "api",
+    "interviewer"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.18.2",
+    "@supabase/supabase-js": "^2.38.4",
+    "@vitejs/plugin-react": "^5.1.1",
+    "axios": "^1.13.2",
+    "chart.js": "^4.5.1",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
-    "@supabase/supabase-js": "^2.38.4",
+    "express": "^4.18.2",
     "express-validator": "^7.0.1",
     "helmet": "^7.1.0",
-    "morgan": "^1.10.0"
+    "morgan": "^1.10.0",
+    "react": "^19.2.1",
+    "react-chartjs-2": "^5.3.1",
+    "react-dom": "^19.2.1",
+    "react-router-dom": "^7.10.1",
+    "vite": "^7.2.7"
   },
   "devDependencies": {
+    "concurrently": "^9.2.1",
     "nodemon": "^3.0.2",
     "typescript": "^5.4.0"
   }
 }
-

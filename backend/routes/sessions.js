@@ -8,15 +8,22 @@ router.get('/', authenticateUser, async (req, res) => {
   try {
     const supabase = req.supabase || req.app.locals.supabase;
     const { userId } = req;
+    const { includeDeleted } = req.query;
     
     if (!supabase) {
       return res.status(503).json({ error: 'Database not available' });
     }
     
-    const { data, error } = await supabase
+    let query = supabase
       .from('sessions')
       .select('*')
       .order('created_at', { ascending: false });
+
+    if (includeDeleted !== 'true') {
+      query = query.is('deleted_at', null);
+    }
+    
+    const { data, error } = await query;
     
     if (error) {
       console.error('Error fetching sessions:', error);
@@ -39,7 +46,8 @@ router.get('/', authenticateUser, async (req, res) => {
       results: session.results || [],
       score: session.score || 0,
       accuracy: session.accuracy || 0,
-      createdAt: session.created_at
+      createdAt: session.created_at,
+      deleted: !!session.deleted_at
     }));
     
     res.json(sessions);
@@ -224,7 +232,7 @@ router.put('/:id', authenticateUser, async (req, res) => {
   }
 });
 
-// Delete a session
+// Delete a session (soft delete)
 router.delete('/:id', authenticateUser, async (req, res) => {
   try {
     const supabase = req.supabase || req.app.locals.supabase;
@@ -235,11 +243,11 @@ router.delete('/:id', authenticateUser, async (req, res) => {
       return res.status(503).json({ error: 'Database not available' });
     }
     
+    // Soft delete by setting deleted_at timestamp
     const { error } = await supabase
       .from('sessions')
-      .delete()
-      .eq('id', id)
-      .eq('user_id', userId);
+      .update({ deleted_at: new Date().toISOString() })
+      .eq('id', id);
     
     if (error) {
       console.error('Error deleting session:', error);
@@ -247,6 +255,33 @@ router.delete('/:id', authenticateUser, async (req, res) => {
     }
     
     res.json({ message: 'Session deleted successfully' });
+  } catch (error) {
+    console.error('Error in DELETE /api/sessions/:id:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Restore a deleted session (Admin2 only typically)
+router.post('/:id/restore', authenticateUser, async (req, res) => {
+  try {
+    const supabase = req.supabase || req.app.locals.supabase;
+    const { id } = req.params;
+    
+    if (!supabase) {
+      return res.status(503).json({ error: 'Database not available' });
+    }
+    
+    const { error } = await supabase
+      .from('sessions')
+      .update({ deleted_at: null })
+      .eq('id', id);
+    
+    if (error) {
+      console.error('Error restoring session:', error);
+      return res.status(500).json({ error: error.message });
+    }
+    
+    res.json({ message: 'Session restored successfully' });
   } catch (error) {
     console.error('Error in DELETE /api/sessions/:id:', error);
     res.status(500).json({ error: 'Internal server error' });

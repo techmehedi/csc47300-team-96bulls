@@ -9,6 +9,10 @@ import progressRoutes from './routes/progress.js';
 import questionsRoutes from './routes/questions.js';
 import statsRoutes from './routes/stats.js';
 import executeRoutes from './routes/execute.js';
+import adminAuthRoutes from './routes/admin-auth.js';
+import adminUsersRoutes from './routes/admin-users.js';
+import adminStatsRoutes from './routes/admin-stats.js';
+import authRoutes from './routes/auth.js';
 
 // Load environment variables
 dotenv.config();
@@ -26,7 +30,7 @@ if (!supabaseUrl || !supabaseServiceKey) {
 }
 
 // Create a default client for admin operations (if needed)
-const supabase = supabaseUrl && supabaseServiceKey 
+const supabase = supabaseUrl && supabaseServiceKey
   ? createClient(supabaseUrl, supabaseServiceKey)
   : null;
 
@@ -47,23 +51,23 @@ app.use(cors({
   origin: function (origin, callback) {
     // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
-    
+
     // Allow if origin is in allowed list
     if (allowedOrigins.includes(origin)) {
       return callback(null, true);
     }
-    
+
     // Also allow localhost variants (for development)
     if (origin.includes('localhost:') || origin.includes('127.0.0.1:')) {
       return callback(null, true);
     }
-    
+
     // For development, allow any localhost/127.0.0.1
-    if (process.env.NODE_ENV !== 'production' && 
-        (origin.startsWith('http://localhost:') || origin.startsWith('http://127.0.0.1:'))) {
+    if (process.env.NODE_ENV !== 'production' &&
+      (origin.startsWith('http://localhost:') || origin.startsWith('http://127.0.0.1:'))) {
       return callback(null, true);
     }
-    
+
     callback(new Error('Not allowed by CORS'));
   },
   credentials: true,
@@ -84,8 +88,8 @@ app.locals.supabase = supabase;
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
-  res.json({ 
-    status: 'ok', 
+  res.json({
+    status: 'ok',
     timestamp: new Date().toISOString(),
     supabase: supabase ? 'connected' : 'not configured'
   });
@@ -97,6 +101,12 @@ app.use('/api/progress', progressRoutes);
 app.use('/api/questions', questionsRoutes);
 app.use('/api/stats', statsRoutes);
 app.use('/api/execute', executeRoutes);
+app.use('/api/auth', authRoutes);
+
+// Admin Routes
+app.use('/api/admin/auth', adminAuthRoutes);
+app.use('/api/admin/users', adminUsersRoutes);
+app.use('/api/admin/stats', adminStatsRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

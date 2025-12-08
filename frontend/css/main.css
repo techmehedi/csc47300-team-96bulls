@@ -2303,9 +2303,11 @@ textarea {
 /* Authentication Styles */
 .auth-container {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  /* Give the form column slightly more space so inputs stretch longer */
+  grid-template-columns: 1.4fr 1fr;
   gap: 48px;
-  max-width: 1000px;
+  /* Allow wider layout to accommodate longer form fields */
+  max-width: 1200px;
   margin: 0 auto;
 }
 
@@ -2315,7 +2317,8 @@ textarea {
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid var(--glass-border);
   border-radius: 24px;
-  padding: 48px;
+  /* Slightly more generous padding to match the stretched layout */
+  padding: 56px;
   box-shadow: var(--glass-shadow);
   position: relative;
   overflow: hidden;
@@ -2667,7 +2670,8 @@ textarea {
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid var(--glass-border);
   border-radius: 24px;
-  padding: 48px;
+  /* Keep padding consistent with the form container */
+  padding: 56px;
   box-shadow: var(--glass-shadow);
   position: relative;
   overflow: hidden;
