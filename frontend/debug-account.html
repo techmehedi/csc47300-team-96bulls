@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Account Type</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+        }
+        pre {
+            background: #f8f8f8;
+            padding: 15px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 10px 5px 10px 0;
+        }
+        button:hover {
+            background: #5568d3;
+        }
+        .error {
+            color: #e74c3c;
+            margin: 10px 0;
+        }
+        .success {
+            color: #27ae60;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Account Type Debug</h1>
+        <p>This page helps you check and fix your account type.</p>
+        
+        <button onclick="checkAccount()">Check My Account</button>
+        <button onclick="fixAccount()">Fix My Account (Set to Admin)</button>
+        <button onclick="fixAccount('user')">Fix My Account (Set to User)</button>
+        
+        <div id="result"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-config.js"></script>
+    <script src="js/supabaseClient.js"></script>
+    <script>
+        async function getAuthToken() {
+            if (window.supabaseClient) {
+                const { data: { session } } = await window.supabaseClient.auth.getSession();
+                return session?.access_token || null;
+            }
+            return null;
+        }
+
+        async function checkAccount() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '<p>Checking...</p>';
+            
+            try {
+                const token = await getAuthToken();
+                if (!token) {
+                    resultDiv.innerHTML = '<p class="error">Not authenticated. Please log in first.</p>';
+                    return;
+                }
+
+                const apiBase = (window.API_URL || 'http://localhost:3000/api').replace(/\/$/, '');
+                const response = await fetch(`${apiBase}/users/debug`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    resultDiv.innerHTML = `
+                        <h3>Account Information:</h3>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                        <p class="${data.isAdmin ? 'success' : 'error'}">
+                            <strong>Admin Status:</strong> ${data.isAdmin ? 'YES (Admin)' : 'NO (User)'}
+                        </p>
+                        ${!data.databaseRole ? '<p class="error"><strong>Warning:</strong> No role found in database. Click "Fix My Account" to create one.</p>' : ''}
+                    `;
+                } else {
+                    const error = await response.json();
+                    resultDiv.innerHTML = `<p class="error">Error: ${error.error || 'Unknown error'}</p>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<p class="error">Error: ${error.message}</p>`;
+            }
+        }
+
+        async function fixAccount(accountType = 'admin') {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '<p>Fixing account...</p>';
+            
+            try {
+                const token = await getAuthToken();
+                if (!token) {
+                    resultDiv.innerHTML = '<p class="error">Not authenticated. Please log in first.</p>';
+                    return;
+                }
+
+                // Get user ID
+                if (window.supabaseClient) {
+                    const { data: { user } } = await window.supabaseClient.auth.getUser();
+                    if (!user) {
+                        resultDiv.innerHTML = '<p class="error">Could not get user information.</p>';
+                        return;
+                    }
+
+                    const apiBase = (window.API_URL || 'http://localhost:3000/api').replace(/\/$/, '');
+                    const response = await fetch(`${apiBase}/users/role`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            userId: user.id,
+                            role: accountType
+                        })
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        resultDiv.innerHTML = `
+                            <p class="success">Account updated successfully!</p>
+                            <pre>${JSON.stringify(data, null, 2)}</pre>
+                            <p><strong>Next step:</strong> Sign out and sign back in to refresh your session.</p>
+                        `;
+                    } else {
+                        const error = await response.json();
+                        resultDiv.innerHTML = `<p class="error">Error: ${error.error || 'Unknown error'}</p>`;
+                    }
+                } else {
+                    resultDiv.innerHTML = '<p class="error">Supabase client not available.</p>';
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<p class="error">Error: ${error.message}</p>`;
+            }
+        }
+
+        // Auto-check on load
+        window.addEventListener('load', () => {
+            setTimeout(checkAccount, 1000);
+        });
+    </script>
+</body>
+</html>
+

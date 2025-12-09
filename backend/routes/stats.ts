@@ -1,10 +1,39 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import { authenticateUser } from '../middleware/auth.js';
 
 const router = express.Router();
 
+interface SessionResult {
+  isCorrect: boolean;
+  [key: string]: any;
+}
+
+interface Session {
+  status: string;
+  results?: SessionResult[];
+  total_time?: number;
+  end_time?: string;
+  [key: string]: any;
+}
+
+interface Progress {
+  id: string;
+  user_id: string;
+  topic: string;
+  difficulty: string;
+  total_attempted?: number;
+  total_correct?: number;
+  total_time_spent?: number;
+  average_time?: number;
+  accuracy?: number;
+  streak?: number;
+  last_practiced?: string;
+  mastery_level?: string;
+  updated_at?: string;
+}
+
 // Get user statistics
-router.get('/', authenticateUser, async (req, res) => {
+router.get('/', authenticateUser, async (req: Request, res: Response) => {
   try {
     const supabase = req.supabase || req.app.locals.supabase;
     const { userId } = req;
@@ -36,22 +65,22 @@ router.get('/', authenticateUser, async (req, res) => {
     }
     
     // Calculate stats from completed sessions
-    const completedSessions = (sessions || []).filter(s => s.status === 'completed' && s.results);
+    const completedSessions = (sessions || []).filter((s: Session) => s.status === 'completed' && s.results);
     
-    const totalSolved = completedSessions.reduce((sum, session) => {
-      const correctCount = (session.results || []).filter(r => r.isCorrect === true).length;
+    const totalSolved = completedSessions.reduce((sum: number, session: Session) => {
+      const correctCount = (session.results || []).filter((r: SessionResult) => r.isCorrect === true).length;
       return sum + correctCount;
     }, 0);
     
-    const totalTime = (sessions || []).reduce((sum, session) => {
+    const totalTime = (sessions || []).reduce((sum: number, session: Session) => {
       return sum + (session.total_time || 0);
     }, 0);
     
     let accuracy = 0;
     if (completedSessions.length > 0) {
-      const totalAccuracy = completedSessions.reduce((sum, session) => {
+      const totalAccuracy = completedSessions.reduce((sum: number, session: Session) => {
         if (session.results && session.results.length > 0) {
-          const sessionAccuracy = (session.results.filter(r => r.isCorrect === true).length) / session.results.length;
+          const sessionAccuracy = (session.results.filter((r: SessionResult) => r.isCorrect === true).length) / session.results.length;
           return sum + sessionAccuracy;
         }
         return sum;
@@ -61,7 +90,7 @@ router.get('/', authenticateUser, async (req, res) => {
     
     const streak = calculateStreak(sessions || []);
     
-    const mappedProgress = (progress || []).map(p => ({
+    const mappedProgress = (progress || []).map((p: Progress) => ({
       id: p.id,
       userId: p.user_id,
       topic: p.topic,
@@ -84,18 +113,18 @@ router.get('/', authenticateUser, async (req, res) => {
       streak: streak || 0,
       progress: mappedProgress
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error in GET /api/stats:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
 
-function calculateStreak(sessions) {
+function calculateStreak(sessions: Session[]): number {
   if (sessions.length === 0) return 0;
   
   const sortedSessions = sessions
-    .filter(s => s.status === 'completed' && s.end_time)
-    .sort((a, b) => new Date(b.end_time) - new Date(a.end_time));
+    .filter((s: Session) => s.status === 'completed' && s.end_time)
+    .sort((a: Session, b: Session) => new Date(b.end_time!).getTime() - new Date(a.end_time!).getTime());
   
   if (sortedSessions.length === 0) return 0;
   
@@ -104,9 +133,9 @@ function calculateStreak(sessions) {
   currentDate.setHours(0, 0, 0, 0);
   
   for (const session of sortedSessions) {
-    const sessionDate = new Date(session.end_time);
+    const sessionDate = new Date(session.end_time!);
     sessionDate.setHours(0, 0, 0, 0);
-    const daysDiff = Math.floor((currentDate - sessionDate) / (1000 * 60 * 60 * 24));
+    const daysDiff = Math.floor((currentDate.getTime() - sessionDate.getTime()) / (1000 * 60 * 60 * 24));
     
     if (daysDiff === streak) {
       streak++;

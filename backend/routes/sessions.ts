@@ -1,10 +1,10 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import { authenticateUser } from '../middleware/auth.js';
 
 const router = express.Router();
 
 // Get all sessions for a user
-router.get('/', authenticateUser, async (req, res) => {
+router.get('/', authenticateUser, async (req: Request, res: Response) => {
   try {
     const supabase = req.supabase || req.app.locals.supabase;
     const { userId } = req;
@@ -24,7 +24,7 @@ router.get('/', authenticateUser, async (req, res) => {
     }
     
     // Map to frontend format
-    const sessions = data.map(session => ({
+    const sessions = data.map((session: any) => ({
       id: session.id,
       userId: session.user_id,
       sessionType: session.session_type,
@@ -43,14 +43,14 @@ router.get('/', authenticateUser, async (req, res) => {
     }));
     
     res.json(sessions);
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error in GET /api/sessions:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
 
 // Get a specific session
-router.get('/:id', authenticateUser, async (req, res) => {
+router.get('/:id', authenticateUser, async (req: Request, res: Response) => {
   try {
     const supabase = req.supabase || req.app.locals.supabase;
     const { userId } = req;
@@ -93,14 +93,14 @@ router.get('/:id', authenticateUser, async (req, res) => {
     };
     
     res.json(session);
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error in GET /api/sessions/:id:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
 
 // Create a new session
-router.post('/', authenticateUser, async (req, res) => {
+router.post('/', authenticateUser, async (req: Request, res: Response) => {
   try {
     const supabase = req.supabase || req.app.locals.supabase;
     const { userId } = req;
@@ -156,14 +156,14 @@ router.post('/', authenticateUser, async (req, res) => {
     };
     
     res.status(201).json(session);
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error in POST /api/sessions:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
 
 // Update a session (for ending/completing)
-router.put('/:id', authenticateUser, async (req, res) => {
+router.put('/:id', authenticateUser, async (req: Request, res: Response) => {
   try {
     const supabase = req.supabase || req.app.locals.supabase;
     const { userId } = req;
@@ -174,7 +174,7 @@ router.put('/:id', authenticateUser, async (req, res) => {
       return res.status(503).json({ error: 'Database not available' });
     }
     
-    const updates = {};
+    const updates: any = {};
     if (endTime !== undefined) updates.end_time = endTime;
     if (status !== undefined) updates.status = status;
     if (results !== undefined) updates.results = results;
@@ -218,14 +218,14 @@ router.put('/:id', authenticateUser, async (req, res) => {
     };
     
     res.json(session);
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error in PUT /api/sessions/:id:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
 
 // Delete a session
-router.delete('/:id', authenticateUser, async (req, res) => {
+router.delete('/:id', authenticateUser, async (req: Request, res: Response) => {
   try {
     const supabase = req.supabase || req.app.locals.supabase;
     const { userId } = req;
@@ -247,7 +247,7 @@ router.delete('/:id', authenticateUser, async (req, res) => {
     }
     
     res.json({ message: 'Session deleted successfully' });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error in DELETE /api/sessions/:id:', error);
     res.status(500).json({ error: 'Internal server error' });
   }

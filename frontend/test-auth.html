@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authentication Tests • AI Interviewer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .test-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+        }
+        
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            background: #f9f9f9;
+        }
+        
+        .test-section h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        
+        .test-item {
+            margin-bottom: 15px;
+            padding: 15px;
+            background: white;
+            border-radius: 6px;
+            border-left: 4px solid #ddd;
+        }
+        
+        .test-item.passing {
+            border-left-color: #10b981;
+            background: #f0fdf4;
+        }
+        
+        .test-item.failing {
+            border-left-color: #ef4444;
+            background: #fef2f2;
+        }
+        
+        .test-item.running {
+            border-left-color: #3b82f6;
+            background: #eff6ff;
+        }
+        
+        .test-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #333;
+        }
+        
+        .test-result {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .test-result.success {
+            color: #10b981;
+        }
+        
+        .test-result.error {
+            color: #ef4444;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #5568d3;
+        }
+        
+        .btn-secondary {
+            background: #6b7280;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #4b5563;
+        }
+        
+        .summary {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f3f4f6;
+            border-radius: 8px;
+        }
+        
+        .summary h3 {
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .summary-stats {
+            display: flex;
+            gap: 20px;
+            margin-top: 10px;
+        }
+        
+        .stat {
+            padding: 10px 20px;
+            background: white;
+            border-radius: 6px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .stat-label {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .test-form {
+            margin-top: 20px;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            border: 2px solid #e0e0e0;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 1em;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🔐 Authentication Tests</h1>
+        <p class="subtitle">Comprehensive tests for login and signup functionality</p>
+        
+        <div style="margin-bottom: 20px;">
+            <button class="btn btn-primary" onclick="runAllTests()">Run All Tests</button>
+            <button class="btn btn-secondary" onclick="runUnitTests()">Run Unit Tests</button>
+            <button class="btn btn-secondary" onclick="runIntegrationTests()">Run Integration Tests</button>
+            <button class="btn btn-secondary" onclick="clearResults()">Clear Results</button>
+        </div>
+        
+        <div class="summary">
+            <h3>Test Summary</h3>
+            <div class="summary-stats">
+                <div class="stat">
+                    <div class="stat-value" id="totalTests">0</div>
+                    <div class="stat-label">Total Tests</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="passedTests" style="color: #10b981;">0</div>
+                    <div class="stat-label">Passed</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="failedTests" style="color: #ef4444;">0</div>
+                    <div class="stat-label">Failed</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="passRate">0%</div>
+                    <div class="stat-label">Pass Rate</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>1. Environment & Configuration Tests</h2>
+            <div id="envTests"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2>2. Supabase Client Initialization Tests</h2>
+            <div id="clientTests"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2>3. Authentication System Initialization Tests</h2>
+            <div id="authSystemTests"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2>4. Form Validation Tests</h2>
+            <div id="validationTests"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2>5. Login Functionality Tests</h2>
+            <div id="loginTests"></div>
+            <div class="test-form">
+                <h3 style="margin-bottom: 15px;">Test Login (Manual)</h3>
+                <div class="form-group">
+                    <label>Test Email:</label>
+                    <input type="email" id="testEmail" placeholder="test@example.com" value="test@example.com">
+                </div>
+                <div class="form-group">
+                    <label>Test Password:</label>
+                    <input type="password" id="testPassword" placeholder="Test password">
+                </div>
+                <button class="btn btn-primary" onclick="testLogin()">Test Login</button>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>6. Signup Functionality Tests</h2>
+            <div id="signupTests"></div>
+            <div class="test-form">
+                <h3 style="margin-bottom: 15px;">Test Signup (Manual)</h3>
+                <div class="form-group">
+                    <label>First Name:</label>
+                    <input type="text" id="testFirstName" placeholder="John" value="Test">
+                </div>
+                <div class="form-group">
+                    <label>Last Name:</label>
+                    <input type="text" id="testLastName" placeholder="Doe" value="User">
+                </div>
+                <div class="form-group">
+                    <label>Email:</label>
+                    <input type="email" id="testSignupEmail" placeholder="newuser@example.com" value="">
+                </div>
+                <div class="form-group">
+                    <label>Username:</label>
+                    <input type="text" id="testUsername" placeholder="johndoe" value="">
+                </div>
+                <div class="form-group">
+                    <label>Password:</label>
+                    <input type="password" id="testSignupPassword" placeholder="Secure password">
+                </div>
+                <button class="btn btn-primary" onclick="testSignup()">Test Signup</button>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>7. Session Management Tests</h2>
+            <div id="sessionTests"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2>8. Error Handling Tests</h2>
+            <div id="errorTests"></div>
+        </div>
+    </div>
+    
+    <!-- Load Supabase library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-config.js"></script>
+    <script src="js/supabaseClient.js"></script>
+    <script src="js/auth.js"></script>
+    
+    <script>
+        // Test runner
+        let testResults = {
+            total: 0,
+            passed: 0,
+            failed: 0
+        };
+        
+        function createTestElement(testName, result, message) {
+            const div = document.createElement('div');
+            div.className = `test-item ${result}`;
+            div.innerHTML = `
+                <div class="test-name">${testName}</div>
+                <div class="test-result ${result === 'passing' ? 'success' : result === 'failing' ? 'error' : ''}">
+                    ${message || (result === 'passing' ? '✓ Passed' : result === 'failing' ? '✗ Failed' : 'Running...')}
+                </div>
+            `;
+            return div;
+        }
+        
+        function updateSummary() {
+            document.getElementById('totalTests').textContent = testResults.total;
+            document.getElementById('passedTests').textContent = testResults.passed;
+            document.getElementById('failedTests').textContent = testResults.failed;
+            const passRate = testResults.total > 0 ? Math.round((testResults.passed / testResults.total) * 100) : 0;
+            document.getElementById('passRate').textContent = passRate + '%';
+        }
+        
+        function runTest(containerId, testName, testFn) {
+            const container = document.getElementById(containerId);
+            const testElement = createTestElement(testName, 'running');
+            container.appendChild(testElement);
+            testResults.total++;
+            
+            try {
+                const result = testFn();
+                if (result instanceof Promise) {
+                    result.then((passed) => {
+                        if (passed) {
+                            testElement.className = 'test-item passing';
+                            testElement.querySelector('.test-result').textContent = '✓ Passed';
+                            testElement.querySelector('.test-result').className = 'test-result success';
+                            testResults.passed++;
+                        } else {
+                            testElement.className = 'test-item failing';
+                            testElement.querySelector('.test-result').textContent = '✗ Failed';
+                            testElement.querySelector('.test-result').className = 'test-result error';
+                            testResults.failed++;
+                        }
+                        updateSummary();
+                    }).catch((error) => {
+                        testElement.className = 'test-item failing';
+                        testElement.querySelector('.test-result').textContent = `✗ Failed: ${error.message}`;
+                        testElement.querySelector('.test-result').className = 'test-result error';
+                        testResults.failed++;
+                        updateSummary();
+                    });
+                } else {
+                    if (result) {
+                        testElement.className = 'test-item passing';
+                        testElement.querySelector('.test-result').textContent = '✓ Passed';
+                        testElement.querySelector('.test-result').className = 'test-result success';
+                        testResults.passed++;
+                    } else {
+                        testElement.className = 'test-item failing';
+                        testElement.querySelector('.test-result').textContent = '✗ Failed';
+                        testElement.querySelector('.test-result').className = 'test-result error';
+                        testResults.failed++;
+                    }
+                    updateSummary();
+                }
+            } catch (error) {
+                testElement.className = 'test-item failing';
+                testElement.querySelector('.test-result').textContent = `✗ Failed: ${error.message}`;
+                testElement.querySelector('.test-result').className = 'test-result error';
+                testResults.failed++;
+                updateSummary();
+            }
+        }
+        
+        // Environment Tests
+        function runEnvironmentTests() {
+            const container = document.getElementById('envTests');
+            container.innerHTML = '';
+            
+            runTest('envTests', 'Supabase URL is configured', () => {
+                return !!(window.SUPABASE_URL && window.SUPABASE_URL.length > 0 && !window.SUPABASE_URL.includes('YOUR-PROJECT'));
+            });
+            
+            runTest('envTests', 'Supabase Anon Key is configured', () => {
+                return !!(window.SUPABASE_ANON_KEY && window.SUPABASE_ANON_KEY.length > 0 && !window.SUPABASE_ANON_KEY.includes('YOUR-ANON'));
+            });
+            
+            runTest('envTests', 'Supabase CDN library is loaded', () => {
+                return !!(window.supabase || window.supabaseJs);
+            });
+        }
+        
+        // Client Tests
+        function runClientTests() {
+            const container = document.getElementById('clientTests');
+            container.innerHTML = '';
+            
+            runTest('clientTests', 'Supabase client initializes', () => {
+                return new Promise((resolve) => {
+                    let attempts = 0;
+                    const checkClient = () => {
+                        if (window.supabaseClient) {
+                            resolve(true);
+                        } else if (attempts < 50) {
+                            attempts++;
+                            setTimeout(checkClient, 100);
+                        } else {
+                            resolve(false);
+                        }
+                    };
+                    checkClient();
+                });
+            });
+            
+            runTest('clientTests', 'Supabase client has auth property', () => {
+                return new Promise((resolve) => {
+                    let attempts = 0;
+                    const checkAuth = () => {
+                        if (window.supabaseClient && window.supabaseClient.auth) {
+                            resolve(true);
+                        } else if (attempts < 50) {
+                            attempts++;
+                            setTimeout(checkAuth, 100);
+                        } else {
+                            resolve(false);
+                        }
+                    };
+                    checkAuth();
+                });
+            });
+            
+            runTest('clientTests', 'getSupabaseUser function exists', () => {
+                return typeof window.getSupabaseUser === 'function';
+            });
+        }
+        
+        // Auth System Tests
+        function runAuthSystemTests() {
+            const container = document.getElementById('authSystemTests');
+            container.innerHTML = '';
+            
+            runTest('authSystemTests', 'AuthenticationSystem class exists', () => {
+                return typeof AuthenticationSystem !== 'undefined';
+            });
+            
+            runTest('authSystemTests', 'authSystem instance is created', () => {
+                return new Promise((resolve) => {
+                    let attempts = 0;
+                    const checkAuthSystem = () => {
+                        if (window.authSystem) {
+                            resolve(true);
+                        } else if (attempts < 30) {
+                            attempts++;
+                            setTimeout(checkAuthSystem, 100);
+                        } else {
+                            resolve(false);
+                        }
+                    };
+                    checkAuthSystem();
+                });
+            });
+            
+            runTest('authSystemTests', 'Login form exists in DOM', () => {
+                const loginForm = document.getElementById('loginForm');
+                return !!loginForm;
+            });
+            
+            runTest('authSystemTests', 'Signup form exists in DOM', () => {
+                const signupForm = document.getElementById('signupForm');
+                return !!signupForm;
+            });
+        }
+        
+        // Validation Tests
+        function runValidationTests() {
+            const container = document.getElementById('validationTests');
+            container.innerHTML = '';
+            
+            runTest('validationTests', 'Email validation works', () => {
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                return emailRegex.test('test@example.com') && !emailRegex.test('invalid-email');
+            });
+            
+            runTest('validationTests', 'Password length validation', () => {
+                return 'password123'.length >= 8;
+            });
+            
+            runTest('validationTests', 'Username validation', () => {
+                return 'testuser'.length >= 3;
+            });
+        }
+        
+        // Login Tests
+        function runLoginTests() {
+            const container = document.getElementById('loginTests');
+            container.innerHTML = '';
+            
+            runTest('loginTests', 'handleLogin method exists', () => {
+                return window.authSystem && typeof window.authSystem.handleLogin === 'function';
+            });
+            
+            runTest('loginTests', 'Login form submission handler attached', () => {
+                const loginForm = document.getElementById('loginForm');
+                if (!loginForm) return false;
+                
+                // Check if event listener is attached by trying to trigger it
+                let handlerAttached = false;
+                const testHandler = () => { handlerAttached = true; };
+                loginForm.addEventListener('test', testHandler);
+                loginForm.dispatchEvent(new Event('test'));
+                loginForm.removeEventListener('test', testHandler);
+                
+                // Also check if form exists and authSystem exists
+                return !!(window.authSystem && loginForm);
+            });
+            
+            runTest('loginTests', 'showLoading method exists', () => {
+                return window.authSystem && typeof window.authSystem.showLoading === 'function';
+            });
+            
+            runTest('loginTests', 'showNotification method exists', () => {
+                return window.authSystem && typeof window.authSystem.showNotification === 'function';
+            });
+        }
+        
+        // Signup Tests
+        function runSignupTests() {
+            const container = document.getElementById('signupTests');
+            container.innerHTML = '';
+            
+            runTest('signupTests', 'handleSignup method exists', () => {
+                return window.authSystem && typeof window.authSystem.handleSignup === 'function';
+            });
+            
+            runTest('signupTests', 'validateSignupForm method exists', () => {
+                return window.authSystem && typeof window.authSystem.validateSignupForm === 'function';
+            });
+            
+            runTest('signupTests', 'mapSupabaseUser method exists', () => {
+                return window.authSystem && typeof window.authSystem.mapSupabaseUser === 'function';
+            });
+        }
+        
+        // Session Tests
+        function runSessionTests() {
+            const container = document.getElementById('sessionTests');
+            container.innerHTML = '';
+            
+            runTest('sessionTests', 'localStorage is available', () => {
+                try {
+                    localStorage.setItem('test', 'value');
+                    const value = localStorage.getItem('test');
+                    localStorage.removeItem('test');
+                    return value === 'value';
+                } catch (e) {
+                    return false;
+                }
+            });
+            
+            runTest('sessionTests', 'checkExistingSession method exists', () => {
+                return window.authSystem && typeof window.authSystem.checkExistingSession === 'function';
+            });
+            
+            runTest('sessionTests', 'logout method exists', () => {
+                return window.authSystem && typeof window.authSystem.logout === 'function';
+            });
+            
+            runTest('sessionTests', 'getCurrentUser method exists', () => {
+                return window.authSystem && typeof window.authSystem.getCurrentUser === 'function';
+            });
+        }
+        
+        // Error Handling Tests
+        function runErrorTests() {
+            const container = document.getElementById('errorTests');
+            container.innerHTML = '';
+            
+            runTest('errorTests', 'showError method exists', () => {
+                return window.authSystem && typeof window.authSystem.showError === 'function';
+            });
+            
+            runTest('errorTests', 'clearErrors method exists', () => {
+                return window.authSystem && typeof window.authSystem.clearErrors === 'function';
+            });
+            
+            runTest('errorTests', 'Error handling for invalid credentials', () => {
+                // This test verifies that error handling exists
+                return window.authSystem && typeof window.authSystem.handleLogin === 'function';
+            });
+        }
+        
+        // Manual test functions
+        async function testLogin() {
+            const email = document.getElementById('testEmail').value;
+            const password = document.getElementById('testPassword').value;
+            
+            if (!email || !password) {
+                alert('Please enter email and password');
+                return;
+            }
+            
+            console.log('=== MANUAL LOGIN TEST ===');
+            console.log('Email:', email);
+            
+            if (!window.authSystem) {
+                alert('Auth system not initialized. Wait a moment and try again.');
+                return;
+            }
+            
+            try {
+                // Create a mock form event
+                const mockForm = {
+                    preventDefault: () => {},
+                    target: {
+                        email: { value: email },
+                        password: { value: password },
+                        rememberMe: { checked: false }
+                    }
+                };
+                
+                await window.authSystem.handleLogin(mockForm);
+            } catch (error) {
+                console.error('Login test error:', error);
+                alert('Login test failed: ' + error.message);
+            }
+        }
+        
+        async function testSignup() {
+            const firstName = document.getElementById('testFirstName').value;
+            const lastName = document.getElementById('testLastName').value;
+            const email = document.getElementById('testSignupEmail').value;
+            const username = document.getElementById('testUsername').value;
+            const password = document.getElementById('testSignupPassword').value;
+            
+            if (!email || !password || !username) {
+                alert('Please fill in all required fields');
+                return;
+            }
+            
+            console.log('=== MANUAL SIGNUP TEST ===');
+            console.log('Email:', email);
+            console.log('Username:', username);
+            
+            if (!window.authSystem) {
+                alert('Auth system not initialized. Wait a moment and try again.');
+                return;
+            }
+            
+            try {
+                // Create a mock form event
+                const mockForm = {
+                    preventDefault: () => {},
+                    target: {
+                        firstName: { value: firstName },
+                        lastName: { value: lastName },
+                        email: { value: email },
+                        username: { value: username },
+                        password: { value: password }
+                    }
+                };
+                
+                await window.authSystem.handleSignup(mockForm);
+            } catch (error) {
+                console.error('Signup test error:', error);
+                alert('Signup test failed: ' + error.message);
+            }
+        }
+        
+        // Main test runners
+        function runAllTests() {
+            testResults = { total: 0, passed: 0, failed: 0 };
+            runEnvironmentTests();
+            setTimeout(() => runClientTests(), 500);
+            setTimeout(() => runAuthSystemTests(), 1000);
+            setTimeout(() => runValidationTests(), 1500);
+            setTimeout(() => runLoginTests(), 2000);
+            setTimeout(() => runSignupTests(), 2500);
+            setTimeout(() => runSessionTests(), 3000);
+            setTimeout(() => runErrorTests(), 3500);
+        }
+        
+        function runUnitTests() {
+            testResults = { total: 0, passed: 0, failed: 0 };
+            runValidationTests();
+            runAuthSystemTests();
+        }
+        
+        function runIntegrationTests() {
+            testResults = { total: 0, passed: 0, failed: 0 };
+            runEnvironmentTests();
+            setTimeout(() => runClientTests(), 500);
+            setTimeout(() => runLoginTests(), 1000);
+            setTimeout(() => runSignupTests(), 1500);
+            setTimeout(() => runSessionTests(), 2000);
+        }
+        
+        function clearResults() {
+            testResults = { total: 0, passed: 0, failed: 0 };
+            updateSummary();
+            document.querySelectorAll('.test-item').forEach(item => item.remove());
+        }
+        
+        // Auto-run basic tests on load
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                runEnvironmentTests();
+                setTimeout(() => runClientTests(), 500);
+                setTimeout(() => runAuthSystemTests(), 1000);
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
+

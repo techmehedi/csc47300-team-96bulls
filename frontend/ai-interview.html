@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Live Interview • AI Interviewer</title>
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/ai-interview.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="nav-container">
+      <a href="index.html" class="brand">
+        <div class="logo-icon">
+          <svg width="32" height="32" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="logoGradient1" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+                <stop offset="50%" style="stop-color:#764ba2;stop-opacity:1" />
+                <stop offset="100%" style="stop-color:#f093fb;stop-opacity:1" />
+              </linearGradient>
+              <linearGradient id="logoGradient2" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:#4facfe;stop-opacity:1" />
+                <stop offset="100%" style="stop-color:#00f2fe;stop-opacity:1" />
+              </linearGradient>
+              <filter id="glow">
+                <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                <feMerge>
+                  <feMergeNode in="coloredBlur"/>
+                  <feMergeNode in="SourceGraphic"/>
+                </feMerge>
+              </filter>
+            </defs>
+            <g transform="translate(60, 60)">
+              <circle cx="-25" cy="-15" r="6" fill="url(#logoGradient1)" filter="url(#glow)"/>
+              <circle cx="25" cy="-15" r="6" fill="url(#logoGradient2)" filter="url(#glow)"/>
+              <circle cx="0" cy="0" r="10" fill="url(#logoGradient1)" filter="url(#glow)"/>
+              <circle cx="-20" cy="20" r="5" fill="url(#logoGradient2)" filter="url(#glow)"/>
+              <circle cx="20" cy="20" r="5" fill="url(#logoGradient1)" filter="url(#glow)"/>
+              <line x1="-25" y1="-15" x2="0" y2="0" stroke="url(#logoGradient1)" stroke-width="1.5" opacity="0.7"/>
+              <line x1="25" y1="-15" x2="0" y2="0" stroke="url(#logoGradient2)" stroke-width="1.5" opacity="0.7"/>
+              <line x1="0" y1="0" x2="-20" y2="20" stroke="url(#logoGradient1)" stroke-width="1.5" opacity="0.7"/>
+              <line x1="0" y1="0" x2="20" y2="20" stroke="url(#logoGradient2)" stroke-width="1.5" opacity="0.7"/>
+              <circle cx="0" cy="0" r="4" fill="#ffffff" opacity="0.9"/>
+              <text x="-30" y="8" font-family="Monaco, monospace" font-size="18" fill="url(#logoGradient1)" font-weight="bold">{</text>
+              <text x="18" y="8" font-family="Monaco, monospace" font-size="18" fill="url(#logoGradient2)" font-weight="bold">}</text>
+            </g>
+          </svg>
+        </div>
+        <span>AI Interviewer</span>
+      </a>
+      <input type="checkbox" id="nav-toggle" class="nav-toggle" aria-label="Toggle navigation">
+      <label for="nav-toggle" class="nav-toggle-btn"><span></span><span></span><span></span></label>
+      <nav class="site-nav">
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="services.html">Services</a>
+        <a href="contact.html">Contact</a>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="admin.html" class="btn primary" style="margin-right: 0.5rem;"><i class="fas fa-shield-alt"></i> Admin Panel</a>
+        <a href="practice.html">Practice</a>
+        <a href="login.html" class="login-link"><i class="fa-regular fa-user"></i> Profile</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="ai-interview-main">
+    <div class="container">
+      <!-- Setup Panel (shown before interview starts) -->
+      <div id="setupPanel" class="setup-panel">
+        <h1>AI Live Interview</h1>
+        <p class="subtitle">Practice with an AI interviewer that adapts to your responses</p>
+        
+        <form id="setupForm" class="setup-form">
+          <div class="form-group">
+            <label for="interviewTopic">Interview Topic</label>
+            <select id="interviewTopic" name="topic" required>
+              <option value="">Select a topic...</option>
+              <option value="arrays">Arrays & Hashing</option>
+              <option value="two-pointers">Two Pointers</option>
+              <option value="sliding-window">Sliding Window</option>
+              <option value="stack">Stack</option>
+              <option value="binary-search">Binary Search</option>
+              <option value="linked-list">Linked List</option>
+              <option value="trees">Trees</option>
+              <option value="tries">Tries</option>
+              <option value="heap">Heap / Priority Queue</option>
+              <option value="backtracking">Backtracking</option>
+              <option value="graphs">Graphs</option>
+              <option value="dynamic-programming">Dynamic Programming</option>
+              <option value="greedy">Greedy</option>
+              <option value="intervals">Intervals</option>
+              <option value="math">Math & Geometry</option>
+              <option value="bit-manipulation">Bit Manipulation</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="interviewDifficulty">Difficulty Level</label>
+            <select id="interviewDifficulty" name="difficulty" required>
+              <option value="">Select difficulty...</option>
+              <option value="easy">Easy</option>
+              <option value="medium">Medium</option>
+              <option value="hard">Hard</option>
+            </select>
+          </div>
+
+          <button type="submit" class="btn primary large">
+            <i class="fas fa-play"></i> Start AI Interview
+          </button>
+        </form>
+      </div>
+
+      <!-- Interview Panel (shown during interview) -->
+      <div id="interviewPanel" class="interview-panel" style="display: none;">
+        <div class="interview-header">
+          <h2 id="interviewTitle">AI Interview Session</h2>
+          <button id="endInterviewBtn" class="btn danger">
+            <i class="fas fa-stop"></i> End Interview
+          </button>
+        </div>
+
+        <div class="interview-content">
+          <!-- Chat Messages Area -->
+          <div class="chat-container">
+            <div id="chatMessages" class="chat-messages">
+              <!-- Messages will be appended here -->
+            </div>
+            
+            <!-- Typing Indicator -->
+            <div id="typingIndicator" class="typing-indicator" style="display: none;">
+              <div class="typing-dot"></div>
+              <div class="typing-dot"></div>
+              <div class="typing-dot"></div>
+              <span>AI is thinking...</span>
+            </div>
+          </div>
+
+          <!-- Input Area -->
+          <div class="chat-input-container">
+            <div class="chat-actions">
+              <button id="requestHintBtn" class="btn secondary" title="Request a hint">
+                <i class="fas fa-lightbulb"></i> Hint
+              </button>
+              <button id="requestEvaluationBtn" class="btn secondary" title="Request evaluation">
+                <i class="fas fa-check-circle"></i> Evaluate
+              </button>
+            </div>
+            <div class="chat-input-wrapper">
+              <textarea 
+                id="chatInput" 
+                placeholder="Type your thoughts, approach, or ask for help..."
+                rows="3"
+              ></textarea>
+              <button id="sendBtn" class="btn primary">
+                <i class="fas fa-paper-plane"></i> Send
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Interview Stats (sidebar) -->
+        <aside class="interview-sidebar">
+          <div class="interview-info-card">
+            <h3>Session Info</h3>
+            <div class="info-item">
+              <span class="info-label">Topic:</span>
+              <span id="sessionTopic" class="info-value">-</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Difficulty:</span>
+              <span id="sessionDifficulty" class="info-value">-</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Duration:</span>
+              <span id="sessionDuration" class="info-value">00:00</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Messages:</span>
+              <span id="messageCount" class="info-value">0</span>
+            </div>
+          </div>
+
+          <div class="interview-info-card">
+            <h3>Interview Tips</h3>
+            <ul class="tips-list">
+              <li>Explain your thought process clearly</li>
+              <li>Discuss time/space complexity</li>
+              <li>Ask clarifying questions</li>
+              <li>Consider edge cases</li>
+              <li>Explain trade-offs in your approach</li>
+            </ul>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <p>© <span id="year"></span> AI Interviewer. All rights reserved.</p>
+      <div class="footer-links">
+        <a href="about.html">About</a>
+        <a href="services.html">Services</a>
+        <a href="contact.html">Contact</a>
+      </div>
+    </div>
+    <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js"></script>
+  <script src="js/supabaseClient.js"></script>
+  <script src="js/ai-interview.js"></script>
+</body>
+</html>
+

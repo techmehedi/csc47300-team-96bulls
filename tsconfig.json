@@ -11,10 +11,16 @@
     "resolveJsonModule": true,
     "outDir": "./frontend/js",
     "rootDir": "./frontend/ts",
-    "lib": ["ES2020", "DOM"]
+    "lib": ["ES2020", "DOM"],
+    "declaration": true,
+    "sourceMap": true
   },
   "include": ["frontend/ts/**/*.ts"],
-  "exclude": ["node_modules", "backend/**"]
+  "exclude": [
+    "node_modules",
+    "backend/**",
+    "frontend/ts/**/*.test.ts"
+  ]
 }
 
 

@@ -2,12 +2,19 @@
   "name": "ai-interviewer-backend",
   "version": "1.0.0",
   "description": "Express backend for AI Interviewer web app",
-  "main": "backend/server.js",
+  "main": "backend/dist/server.js",
   "type": "module",
   "scripts": {
-    "start": "node backend/server.js",
-    "dev": "nodemon backend/server.js",
-    "ts:build": "tsc -p tsconfig.json"
+    "build": "npm run build:backend && npm run build:frontend",
+    "build:backend": "tsc -p backend/tsconfig.json",
+    "build:frontend": "tsc -p tsconfig.json && node backend/scripts/remove-exports.mjs",
+    "start": "node backend/dist/server.js",
+    "dev": "nodemon --exec \"npm run build:backend && node backend/dist/server.js\"",
+    "ts:build": "npm run build",
+    "ts:watch": "tsc --watch -p backend/tsconfig.json",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage"
   },
   "keywords": ["express", "api", "interviewer"],
   "author": "",
@@ -23,7 +30,25 @@
   },
   "devDependencies": {
     "nodemon": "^3.0.2",
-    "typescript": "^5.4.0"
+    "typescript": "^5.4.0",
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.10.0",
+    "@types/cors": "^2.8.17",
+    "@types/morgan": "^1.9.9",
+    "@types/jest": "^29.5.11",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.1"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "jsdom",
+    "roots": ["<rootDir>/frontend/ts"],
+    "testMatch": ["**/*.test.ts"],
+    "moduleNameMapper": {
+      "^(\\.{1,2}/.*)\\.js$": "$1"
+    },
+    "transform": {
+      "^.+\\.ts$": "ts-jest"
+    }
   }
 }
-

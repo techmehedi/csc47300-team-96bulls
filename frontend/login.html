@@ -57,7 +57,9 @@
                 <a href="services.html">Services</a>
                 <a href="contact.html">Contact</a>
                 <a href="dashboard.html">Dashboard</a>
+                <a href="admin.html" class="btn primary" style="margin-right: 0.5rem;"><i class="fas fa-shield-alt"></i> Admin Panel</a>
                 <a href="practice.html">Practice</a>
+                <a href="ai-interview.html" class="btn primary">AI Interview</a>
                 <a href="login.html" class="active login-link"><i class="fa-regular fa-user"></i> Login</a>
             </nav>
         </div>
@@ -166,7 +168,22 @@
         </div>
         <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
     </footer>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" onerror="console.error('Failed to load Supabase library from CDN')"></script>
+    <script>
+        // Diagnostic: Check if Supabase library loaded
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                console.log('Supabase library check:', {
+                    'window.supabase': typeof window.supabase,
+                    'window.supabaseJs': typeof window.supabaseJs,
+                    'window.SupabaseClient': typeof window.SupabaseClient,
+                    'hasCreateClient': window.supabase && typeof window.supabase.createClient === 'function',
+                    'SUPABASE_URL': window.SUPABASE_URL ? 'SET' : 'MISSING',
+                    'SUPABASE_ANON_KEY': window.SUPABASE_ANON_KEY ? 'SET' : 'MISSING'
+                });
+            }, 1000);
+        });
+    </script>
     <script src="js/supabase-config.js"></script>
     <script src="js/supabaseClient.js"></script>
     <script src="js/supabase-db.js"></script>

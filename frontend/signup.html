@@ -57,7 +57,9 @@
                 <a href="services.html">Services</a>
                 <a href="contact.html">Contact</a>
                 <a href="dashboard.html">Dashboard</a>
+                <a href="admin.html" class="btn primary" style="margin-right: 0.5rem;"><i class="fas fa-shield-alt"></i> Admin Panel</a>
                 <a href="practice.html">Practice</a>
+                <a href="ai-interview.html" class="btn primary">AI Interview</a>
                 <a href="login.html" class="login-link"><i class="fa-regular fa-user"></i> Login</a>
             </nav>
         </div>
@@ -112,15 +114,6 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="username">Username</label>
-                            <div class="input-group">
-                                <i class="fa-solid fa-at input-icon"></i>
-                                <input type="text" id="username" name="username" placeholder="Choose a username" required>
-                            </div>
-                            <div class="error-message" id="usernameError"></div>
-                        </div>
-
-                        <div class="form-group">
                             <label for="password">Password</label>
                             <div class="input-group">
                                 <i class="fa-solid fa-lock input-icon"></i>
@@ -139,15 +132,18 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="confirmPassword">Confirm Password</label>
+                            <label for="accountType">Account Type</label>
                             <div class="input-group">
-                                <i class="fa-solid fa-lock input-icon"></i>
-                                <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm your password" required>
-                                <button type="button" class="password-toggle" id="confirmPasswordToggle">
-                                    <i class="fa-solid fa-eye"></i>
-                                </button>
+                                <i class="fa-solid fa-user-shield input-icon"></i>
+                                <select id="accountType" name="accountType" required>
+                                    <option value="user">User</option>
+                                    <option value="admin">Admin</option>
+                                </select>
                             </div>
-                            <div class="error-message" id="confirmPasswordError"></div>
+                            <small style="color: #cbd5e1; font-size: 0.85rem; margin-top: 0.5rem; display: block;">
+                                Select "Admin" if you need to review question proposals
+                            </small>
+                            <div class="error-message" id="accountTypeError"></div>
                         </div>
 
                         <div class="form-options">

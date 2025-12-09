@@ -740,11 +740,13 @@ button:active {
   justify-content: center;
   gap: 8px;
   text-decoration: none;
-  background: var(--glass-bg);
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
   backdrop-filter: blur(10px);
-  color: var(--text-primary);
+  color: #ffffff;
   padding: 14px 28px;
   border-radius: 16px;
+  font-weight: 600;
+  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
   font-weight: 600;
   border: 1px solid var(--glass-border);
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
@@ -786,10 +788,11 @@ button:active {
 }
 
 .btn.primary { 
-  background: var(--gradient-primary);
-  color: #fff;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #ffffff;
   border: none;
-  box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4);
+  box-shadow: 0 4px 20px rgba(102, 126, 234, 0.5);
+  font-weight: 700;
 }
 
 .btn.primary::before {
@@ -1042,6 +1045,12 @@ button:active {
   background: linear-gradient(90deg, #60a5fa 0%, #3b82f6 100%);
 }
 
+/* Improve contrast for hint box on light backgrounds */
+.hint-display {
+  background: #eef2ff; /* very light indigo */
+  border-color: #c7d2fe; /* indigo-200 */
+}
+
 .solution-display {
   background: rgba(15, 23, 42, 0.6);
   border-color: rgba(255, 255, 255, 0.18);
@@ -1052,11 +1061,10 @@ button:active {
 }
 
 .hint-display h4, .solution-display h4 {
-  color: #ffffff;
+  color: #1e293b;
   margin-bottom: 16px;
   font-size: 1rem;
   font-weight: 700;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   display: flex;
   align-items: center;
   gap: 8px;
@@ -1068,9 +1076,7 @@ button:active {
   text-shadow: 0 0 10px rgba(251, 191, 36, 0.5);
 }
 
-.solution-display h4 {
-  color: #ffffff;
-}
+.solution-display h4 { color: #ffffff; }
 
 .solution-display h4 i {
   color: #22c55e;
@@ -1079,15 +1085,14 @@ button:active {
 .hint-display p,
 .hint-display div,
 .hint-display ul {
-  color: #e2e8f0;
+  color: #1f2937;
   margin: 0;
   line-height: 1.8;
   font-size: 1rem;
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
 }
 
 .hint-display ul li {
-  color: #e2e8f0;
+  color: #1f2937;
   line-height: 1.8;
   margin-bottom: 12px;
 }
@@ -1169,7 +1174,7 @@ textarea {
   gap: 32px;
 }
 
-.stats-section, .chart-section, .topics-section, .activity-section, .goals-section {
+.stats-section, .chart-section, .topics-section, .activity-section, .goals-section, .quick-actions-section {
   background: rgba(42, 49, 85, 0.8);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
@@ -1186,7 +1191,8 @@ textarea {
 .chart-section::before,
 .topics-section::before,
 .activity-section::before,
-.goals-section::before {
+.goals-section::before,
+.quick-actions-section::before {
   content: '';
   position: absolute;
   top: 0;
@@ -1675,6 +1681,80 @@ textarea {
   font-weight: 600;
 }
 
+/* Quick Actions Section */
+.quick-actions-section {
+  background: rgba(42, 49, 85, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  padding: 24px;
+  margin-top: 24px;
+  backdrop-filter: blur(10px);
+}
+
+.quick-actions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.action-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  background: rgba(42, 49, 85, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.action-card:hover {
+  background: rgba(42, 49, 85, 0.8);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(99, 102, 241, 0.3);
+}
+
+.action-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.9) 0%, rgba(139, 92, 246, 0.9) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  color: #ffffff;
+  flex-shrink: 0;
+  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+}
+
+.action-card:hover .action-icon {
+  transform: scale(1.1) rotate(5deg);
+  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5);
+}
+
+.action-content {
+  flex: 1;
+}
+
+.action-content h4 {
+  color: #ffffff;
+  margin: 0 0 4px 0;
+  font-size: 1rem;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.action-content p {
+  color: #e2e8f0;
+  margin: 0;
+  font-size: 0.85rem;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .stats-grid {
@@ -1760,14 +1840,16 @@ textarea {
 .form-group select {
   padding: 12px 16px;
   padding-right: 40px;
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 2px solid rgba(255, 255, 255, 0.4);
   border-radius: 12px;
   font-size: 0.95rem;
-  background: rgba(255, 255, 255, 0.95);
+  background: #ffffff;
   color: #1a1f3a;
   transition: all 0.3s ease;
   appearance: none;
   -webkit-appearance: none;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  font-weight: 600;
   -moz-appearance: none;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%231a1f3a' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
@@ -1791,11 +1873,20 @@ textarea {
 }
 
 .btn.large {
-  padding: 14px 28px;
+  padding: 16px 32px;
   font-size: 1.1rem;
   grid-column: 1 / -1;
   justify-self: center;
   margin-top: 16px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  box-shadow: 0 6px 25px rgba(102, 126, 234, 0.4);
+  font-weight: 700;
+}
+
+.btn.large:hover {
+  box-shadow: 0 8px 35px rgba(102, 126, 234, 0.6);
+  transform: translateY(-3px) scale(1.02);
 }
 
 .session-header {
@@ -1858,15 +1949,27 @@ textarea {
 .btn.small {
   padding: 8px 12px;
   font-size: 0.85rem;
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  color: white;
+  box-shadow: 0 2px 10px rgba(99, 102, 241, 0.3);
+  font-weight: 600;
+}
+
+.btn.small:hover {
+  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
 }
 
 .btn.danger {
-  background: #ef4444;
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
   color: #ffffff;
+  box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+  font-weight: 600;
 }
 
 .btn.danger:hover {
-  background: #dc2626;
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  box-shadow: 0 6px 25px rgba(239, 68, 68, 0.5);
+  transform: translateY(-2px);
 }
 
 .question-container {
@@ -1984,6 +2087,82 @@ textarea {
   gap: 12px;
   flex-wrap: wrap;
   margin-bottom: 24px;
+}
+
+/* Specific button styles for solution actions */
+#runCodeBtn {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: white;
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+  font-weight: 600;
+}
+
+#runCodeBtn:hover {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  box-shadow: 0 6px 25px rgba(59, 130, 246, 0.5);
+  transform: translateY(-2px);
+}
+
+#submitSolutionBtn {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+  font-weight: 700;
+}
+
+#submitSolutionBtn:hover {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  box-shadow: 0 6px 25px rgba(16, 185, 129, 0.5);
+  transform: translateY(-2px);
+}
+
+#getHintBtn {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: white;
+  box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
+  font-weight: 600;
+}
+
+#getHintBtn:hover {
+  background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+  box-shadow: 0 6px 25px rgba(245, 158, 11, 0.5);
+  transform: translateY(-2px);
+}
+
+#showSolutionBtn {
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+  color: white;
+  box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
+  font-weight: 600;
+}
+
+#showSolutionBtn:hover {
+  background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+  box-shadow: 0 6px 25px rgba(139, 92, 246, 0.5);
+  transform: translateY(-2px);
+}
+
+/* Timer control buttons */
+#pauseBtn {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: white;
+  box-shadow: 0 2px 10px rgba(245, 158, 11, 0.3);
+}
+
+#pauseBtn:hover {
+  background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+  box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
+}
+
+#stopBtn {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: white;
+  box-shadow: 0 2px 10px rgba(239, 68, 68, 0.3);
+}
+
+#stopBtn:hover {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
 }
 
 .code-output-display {
@@ -2165,6 +2344,34 @@ textarea {
   justify-content: center;
   gap: 16px;
   margin-top: 24px;
+}
+
+#nextQuestionBtn {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4);
+  font-weight: 700;
+  padding: 14px 32px;
+}
+
+#nextQuestionBtn:hover {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  box-shadow: 0 6px 30px rgba(16, 185, 129, 0.5);
+  transform: translateY(-2px) scale(1.02);
+}
+
+#endSessionBtn {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: white;
+  box-shadow: 0 4px 20px rgba(239, 68, 68, 0.4);
+  font-weight: 700;
+  padding: 14px 32px;
+}
+
+#endSessionBtn:hover {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  box-shadow: 0 6px 30px rgba(239, 68, 68, 0.5);
+  transform: translateY(-2px) scale(1.02);
 }
 
 .results-container {
@@ -3486,7 +3693,7 @@ textarea {
     gap: 24px;
   }
   
-  .stats-section, .chart-section, .topics-section, .activity-section, .goals-section {
+  .stats-section, .chart-section, .topics-section, .activity-section, .goals-section, .quick-actions-section {
     padding: 28px;
     border-radius: 20px;
   }
@@ -3651,7 +3858,7 @@ textarea {
     gap: 24px;
   }
   
-  .stats-section, .chart-section, .topics-section, .activity-section, .goals-section {
+  .stats-section, .chart-section, .topics-section, .activity-section, .goals-section, .quick-actions-section {
     padding: 24px;
     border-radius: 20px;
   }
@@ -3875,7 +4082,7 @@ textarea {
   }
   
   /* Dashboard */
-  .stats-section, .chart-section, .topics-section, .activity-section, .goals-section {
+  .stats-section, .chart-section, .topics-section, .activity-section, .goals-section, .quick-actions-section {
     padding: 20px;
     border-radius: 16px;
   }
@@ -4058,7 +4265,7 @@ textarea {
     font-size: 1.2rem;
   }
   
-  .stats-section, .chart-section, .topics-section, .activity-section, .goals-section {
+  .stats-section, .chart-section, .topics-section, .activity-section, .goals-section, .quick-actions-section {
     padding: 16px;
   }
   

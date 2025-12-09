@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supabase Test</title>
+</head>
+<body>
+    <h1>Supabase Initialization Test</h1>
+    <div id="results"></div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-config.js"></script>
+    <script>
+        function checkSupabase() {
+            const results = document.getElementById('results');
+            let html = '<h2>Test Results:</h2><ul>';
+            
+            // Check 1: Supabase library
+            const hasSupabaseLib = !!(window.supabase && typeof window.supabase.createClient === 'function');
+            html += `<li>Supabase Library: ${hasSupabaseLib ? '✅ Loaded' : '❌ Not Found'}</li>`;
+            
+            if (!hasSupabaseLib) {
+                html += '<li>Checking alternatives...</li>';
+                html += `<li>window.supabase exists: ${!!window.supabase}</li>`;
+                html += `<li>window.supabaseJs exists: ${!!window.supabaseJs}</li>`;
+                html += `<li>window.SupabaseClient exists: ${!!window.SupabaseClient}</li>`;
+                
+                // List all window properties with 'supabase' in name
+                const supabaseKeys = Object.keys(window).filter(k => k.toLowerCase().includes('supabase'));
+                html += `<li>Supabase-related keys: ${supabaseKeys.length > 0 ? supabaseKeys.join(', ') : 'None found'}</li>`;
+            }
+            
+            // Check 2: Configuration
+            const hasUrl = !!window.SUPABASE_URL;
+            const hasKey = !!window.SUPABASE_ANON_KEY;
+            html += `<li>SUPABASE_URL: ${hasUrl ? '✅ Set' : '❌ Missing'}</li>`;
+            html += `<li>SUPABASE_ANON_KEY: ${hasKey ? '✅ Set' : '❌ Missing'}</li>`;
+            
+            if (hasUrl) {
+                html += `<li>URL Value: ${window.SUPABASE_URL.substring(0, 30)}...</li>`;
+            }
+            
+            // Check 3: Try to create client
+            if (hasSupabaseLib && hasUrl && hasKey) {
+                try {
+                    const client = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
+                    html += `<li>Client Creation: ✅ Success</li>`;
+                    html += `<li>Client has auth: ${!!client.auth ? '✅' : '❌'}</li>`;
+                } catch (error) {
+                    html += `<li>Client Creation: ❌ Failed - ${error.message}</li>`;
+                }
+            } else {
+                html += '<li>Client Creation: ⏭️ Skipped (missing requirements)</li>';
+            }
+            
+            html += '</ul>';
+            results.innerHTML = html;
+        }
+        
+        // Run check immediately
+        checkSupabase();
+        
+        // Run check again after a delay (in case scripts load asynchronously)
+        setTimeout(checkSupabase, 2000);
+        setTimeout(checkSupabase, 5000);
+    </script>
+</body>
+</html>
+

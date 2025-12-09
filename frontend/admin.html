@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel • AI Interviewer</title>
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/admin.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body class="admin-body">
+  <header class="admin-header">
+    <div class="admin-header-content">
+      <h1 class="admin-title">AI Interviewer - Admin</h1>
+      <nav class="admin-nav">
+        <a href="dashboard.html">Dashboard</a>
+        <a href="practice.html">Practice</a>
+        <a href="ai-interview.html" class="btn primary">AI Interview</a>
+        <a href="admin.html" class="active" style="font-weight: bold;"><i class="fas fa-shield-alt"></i> Admin Panel</a>
+        <a href="index.html">Community</a>
+        <a href="dashboard.html">Profile</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="admin-container">
+    <aside class="admin-sidebar">
+      <h2 class="sidebar-title">Filter</h2>
+      <ul class="filter-list">
+        <li>
+          <button class="filter-btn active" data-status="pending">
+            <i class="fas fa-clock"></i> Pending
+          </button>
+        </li>
+        <li>
+          <button class="filter-btn" data-status="approved">
+            <i class="fas fa-check-circle"></i> Approved
+          </button>
+        </li>
+        <li>
+          <button class="filter-btn" data-status="rejected">
+            <i class="fas fa-times-circle"></i> Rejected
+          </button>
+        </li>
+      </ul>
+    </aside>
+
+    <main class="admin-main">
+      <div class="admin-content-header">
+        <h2 class="content-title" id="contentTitle">Pending Posts Review</h2>
+      </div>
+
+      <div class="proposals-container" id="proposalsContainer">
+        <div class="loading-spinner" id="loadingSpinner">
+          <i class="fas fa-spinner fa-spin"></i> Loading proposals...
+        </div>
+        <div class="empty-state" id="emptyState" style="display: none;">
+          <i class="fas fa-inbox"></i>
+          <p>No proposals found</p>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Review Modal -->
+  <div class="modal" id="reviewModal" style="display: none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Review Proposal</h3>
+        <button class="modal-close" id="closeModal">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-body" id="modalBody">
+        <!-- Proposal details will be inserted here -->
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="cancelReview">Cancel</button>
+        <button class="btn btn-danger" id="rejectBtn">Reject</button>
+        <button class="btn btn-success" id="approveBtn">Approve</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/admin-session-protect.js"></script>
+  <script type="module" src="js/admin.js?v=2"></script>
+</body>
+</html>
+
+

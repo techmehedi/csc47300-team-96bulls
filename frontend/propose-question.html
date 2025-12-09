@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Propose Question • AI Interviewer</title>
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/admin.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body class="admin-body">
+  <header class="admin-header">
+    <div class="admin-header-content">
+      <a href="index.html" class="admin-title" style="text-decoration: none; color: inherit;">
+        <i class="fas fa-arrow-left" style="margin-right: 0.5rem;"></i>
+        AI Interviewer
+      </a>
+      <nav class="admin-nav">
+        <a href="dashboard.html">Dashboard</a>
+        <a href="practice.html">Practice</a>
+        <a href="ai-interview.html" class="btn primary">AI Interview</a>
+        <a href="admin.html" class="btn primary" style="margin-right: 0.5rem;"><i class="fas fa-shield-alt"></i> Admin Panel</a>
+        <a href="index.html">Community</a>
+        <a href="dashboard.html">Profile</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="admin-container" style="max-width: 900px; margin: 2rem auto;">
+    <main class="admin-main">
+      <div class="admin-content-header">
+        <h2 class="content-title">Propose a New Question</h2>
+        <p style="color: #666; margin-top: 0.5rem;">Help expand our question bank by proposing new LeetCode-style problems</p>
+      </div>
+
+      <div id="authMessage" style="display:none; margin-bottom:1rem; padding:1rem; border:1px solid #f59e0b; background:#fff8eb; color:#92400e; border-radius:8px;">
+        Please log in to propose a question.
+      </div>
+
+      <div id="authLoading" style="text-align: center; padding: 2rem; display: none;">
+        <i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: #666;"></i>
+        <p style="margin-top: 1rem; color: #666;">Checking authentication...</p>
+      </div>
+
+      <form id="proposalForm" class="proposal-form">
+        <div class="form-section">
+          <label for="title">Question Title *</label>
+          <input type="text" id="title" name="title" required placeholder="e.g., Two Sum">
+        </div>
+
+        <div class="form-section">
+          <label for="description">Problem Description *</label>
+          <textarea id="description" name="description" rows="6" required placeholder="Describe the problem in detail..."></textarea>
+        </div>
+
+        <div class="form-row">
+          <div class="form-section">
+            <label for="difficulty">Difficulty *</label>
+            <select id="difficulty" name="difficulty" required>
+              <option value="">Select difficulty</option>
+              <option value="easy">Easy</option>
+              <option value="medium">Medium</option>
+              <option value="hard">Hard</option>
+            </select>
+          </div>
+
+          <div class="form-section">
+            <label for="topic">Topic *</label>
+            <select id="topic" name="topic" required>
+              <option value="">Select topic</option>
+              <option value="arrays">Arrays</option>
+              <option value="strings">Strings</option>
+              <option value="linked-lists">Linked Lists</option>
+              <option value="trees">Trees</option>
+              <option value="graphs">Graphs</option>
+              <option value="dynamic-programming">Dynamic Programming</option>
+              <option value="backtracking">Backtracking</option>
+              <option value="greedy">Greedy</option>
+              <option value="binary-search">Binary Search</option>
+              <option value="heap">Heap</option>
+              <option value="trie">Trie</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <label for="constraints">Constraints (one per line)</label>
+          <textarea id="constraints" name="constraints" rows="3" placeholder="e.g., 1 ≤ n ≤ 10⁵"></textarea>
+          <small style="color: #999; font-size: 0.85rem;">Enter each constraint on a new line</small>
+        </div>
+
+        <div class="form-section">
+          <label for="examples">Examples (JSON format)</label>
+          <textarea id="examples" name="examples" rows="4" placeholder='[{"input": "nums = [2,7,11,15], target = 9", "output": "[0,1]", "explanation": "Because nums[0] + nums[1] == 9"}]'></textarea>
+          <small style="color: #999; font-size: 0.85rem;">Enter examples as JSON array</small>
+        </div>
+
+        <div class="form-section">
+          <label>Test Cases *</label>
+          <div id="testCasesContainer">
+            <div class="test-case-item">
+              <div class="test-case-input">
+                <label>Input</label>
+                <input type="text" class="test-input" placeholder="e.g., nums = [2,7,11,15], target = 9">
+              </div>
+              <div class="test-case-output">
+                <label>Expected Output</label>
+                <input type="text" class="test-output" placeholder="e.g., [0,1]">
+              </div>
+              <button type="button" class="btn-remove-test" onclick="removeTestCase(this)">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+          </div>
+          <button type="button" class="btn-add-test" onclick="addTestCase()">
+            <i class="fas fa-plus"></i> Add Test Case
+          </button>
+        </div>
+
+        <div class="form-section">
+          <label for="hints">Hints (one per line)</label>
+          <textarea id="hints" name="hints" rows="3" placeholder="Enter hints, one per line"></textarea>
+        </div>
+
+        <div class="form-section">
+          <label for="solution">Solution (optional)</label>
+          <textarea id="solution" name="solution" rows="8" placeholder="function solve(nums, target) {&#10;  // Your solution here&#10;}"></textarea>
+        </div>
+
+        <div class="form-row">
+          <div class="form-section">
+            <label for="timeComplexity">Time Complexity (optional)</label>
+            <input type="text" id="timeComplexity" name="timeComplexity" placeholder="e.g., O(n)">
+          </div>
+
+          <div class="form-section">
+            <label for="spaceComplexity">Space Complexity (optional)</label>
+            <input type="text" id="spaceComplexity" name="spaceComplexity" placeholder="e.g., O(1)">
+          </div>
+        </div>
+
+        <div class="form-section">
+          <label for="tags">Tags (comma-separated)</label>
+          <input type="text" id="tags" name="tags" placeholder="e.g., Array, Hash Table, Two Pointers">
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" onclick="window.location.href='dashboard.html'">Cancel</button>
+          <button type="submit" class="btn btn-success">
+            <i class="fas fa-paper-plane"></i> Submit Proposal
+          </button>
+        </div>
+      </form>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js"></script>
+  <script src="js/supabaseClient.js"></script>
+  <script src="js/auth-check.js"></script>
+  <script src="js/propose-question.js"></script>
+</body>
+</html>
+
+

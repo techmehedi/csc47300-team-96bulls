@@ -1,14 +1,17 @@
-import express from 'express';
+import express, { Request, Response, NextFunction, ErrorRequestHandler } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import helmet from 'helmet';
 import morgan from 'morgan';
-import { createClient } from '@supabase/supabase-js';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import sessionRoutes from './routes/sessions.js';
 import progressRoutes from './routes/progress.js';
 import questionsRoutes from './routes/questions.js';
 import statsRoutes from './routes/stats.js';
 import executeRoutes from './routes/execute.js';
+import proposalsRoutes from './routes/proposals.js';
+import usersRoutes from './routes/users.js';
+import aiInterviewRoutes from './routes/ai-interview.js';
 
 // Load environment variables
 dotenv.config();
@@ -26,7 +29,7 @@ if (!supabaseUrl || !supabaseServiceKey) {
 }
 
 // Create a default client for admin operations (if needed)
-const supabase = supabaseUrl && supabaseServiceKey 
+const supabase: SupabaseClient | null = supabaseUrl && supabaseServiceKey 
   ? createClient(supabaseUrl, supabaseServiceKey)
   : null;
 
@@ -37,11 +40,11 @@ app.locals.supabaseServiceKey = supabaseServiceKey;
 
 // CORS configuration - MUST come before other middleware
 // Allow both localhost and 127.0.0.1
-const allowedOrigins = [
+const allowedOrigins: string[] = [
   'http://localhost:5500',
   'http://127.0.0.1:5500',
   process.env.FRONTEND_URL
-].filter(Boolean);
+].filter(Boolean) as string[];
 
 app.use(cors({
   origin: function (origin, callback) {
@@ -67,7 +70,7 @@ app.use(cors({
     callback(new Error('Not allowed by CORS'));
   },
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
@@ -83,7 +86,7 @@ app.use(express.urlencoded({ extended: true }));
 app.locals.supabase = supabase;
 
 // Health check endpoint
-app.get('/api/health', (req, res) => {
+app.get('/api/health', (req: Request, res: Response) => {
   res.json({ 
     status: 'ok', 
     timestamp: new Date().toISOString(),
@@ -97,18 +100,21 @@ app.use('/api/progress', progressRoutes);
 app.use('/api/questions', questionsRoutes);
 app.use('/api/stats', statsRoutes);
 app.use('/api/execute', executeRoutes);
+app.use('/api/proposals', proposalsRoutes);
+app.use('/api/users', usersRoutes);
+app.use('/api/ai-interview', aiInterviewRoutes);
 
 // Error handling middleware
-app.use((err, req, res, next) => {
+app.use(((err: Error, req: Request, res: Response, next: NextFunction) => {
   console.error('Error:', err);
-  res.status(err.status || 500).json({
+  res.status((err as any).status || 500).json({
     error: err.message || 'Internal server error',
     ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
   });
-});
+}) as ErrorRequestHandler);
 
 // 404 handler
-app.use((req, res) => {
+app.use((req: Request, res: Response) => {
   res.status(404).json({ error: 'Route not found' });
 });
 

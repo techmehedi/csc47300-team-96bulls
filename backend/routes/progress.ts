@@ -1,10 +1,10 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import { authenticateUser } from '../middleware/auth.js';
 
 const router = express.Router();
 
 // Get all progress for a user
-router.get('/', authenticateUser, async (req, res) => {
+router.get('/', authenticateUser, async (req: Request, res: Response) => {
   try {
     const supabase = req.supabase || req.app.locals.supabase;
     const { userId } = req;
@@ -23,7 +23,7 @@ router.get('/', authenticateUser, async (req, res) => {
       return res.status(500).json({ error: error.message });
     }
     
-    const progress = data.map(p => ({
+    const progress = data.map((p: any) => ({
       id: p.id,
       userId: p.user_id,
       topic: p.topic,
@@ -40,14 +40,14 @@ router.get('/', authenticateUser, async (req, res) => {
     }));
     
     res.json(progress);
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error in GET /api/progress:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
 
 // Get progress for a specific topic/difficulty
-router.get('/:topic/:difficulty', authenticateUser, async (req, res) => {
+router.get('/:topic/:difficulty', authenticateUser, async (req: Request, res: Response) => {
   try {
     const supabase = req.supabase || req.app.locals.supabase;
     const { userId } = req;
@@ -89,14 +89,14 @@ router.get('/:topic/:difficulty', authenticateUser, async (req, res) => {
     };
     
     res.json(progress);
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error in GET /api/progress/:topic/:difficulty:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
 
 // Update or create progress
-router.post('/', authenticateUser, async (req, res) => {
+router.post('/', authenticateUser, async (req: Request, res: Response) => {
   try {
     const supabase = req.supabase || req.app.locals.supabase;
     const { userId } = req;
@@ -121,7 +121,7 @@ router.post('/', authenticateUser, async (req, res) => {
     
     // Calculate new stats
     const results = sessionData.results || [];
-    const correctAnswers = results.filter(r => r.isCorrect === true).length;
+    const correctAnswers = results.filter((r: any) => r.isCorrect === true).length;
     const totalAttempted = (progressData?.total_attempted || 0) + results.length;
     const totalCorrect = (progressData?.total_correct || 0) + correctAnswers;
     const totalTimeSpent = (progressData?.total_time_spent || 0) + (sessionData.totalTime || 0);
@@ -141,7 +141,7 @@ router.post('/', authenticateUser, async (req, res) => {
       updated_at: new Date().toISOString()
     };
     
-    let result;
+    let result: any;
     if (progressData && !fetchError) {
       // Update existing
       const { data, error } = await supabase
@@ -182,13 +182,13 @@ router.post('/', authenticateUser, async (req, res) => {
     };
     
     res.status(progressData ? 200 : 201).json(progress);
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error in POST /api/progress:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
 
-function calculateMasteryLevel(accuracy) {
+function calculateMasteryLevel(accuracy: number): 'beginner' | 'intermediate' | 'advanced' | 'expert' {
   if (accuracy >= 0.8) return 'expert';
   if (accuracy >= 0.6) return 'advanced';
   if (accuracy >= 0.4) return 'intermediate';

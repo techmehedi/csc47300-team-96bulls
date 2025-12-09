@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -10,16 +10,27 @@ const __dirname = path.dirname(__filename);
 // Get project root (two levels up from backend/routes/)
 const projectRoot = path.resolve(__dirname, '../..');
 
+interface Question {
+  id: string;
+  title: string;
+  description: string;
+  difficulty: 'easy' | 'medium' | 'hard';
+  topic: string;
+  examples?: any[];
+  hints?: string[];
+  solution?: string;
+}
+
 // Get questions by topic and difficulty
-router.get('/', async (req, res) => {
+router.get('/', async (req: Request, res: Response) => {
   try {
-    const { topic, difficulty, limit = 10 } = req.query;
+    const { topic, difficulty, limit = '10' } = req.query;
     
     if (!topic || !difficulty) {
       return res.status(400).json({ error: 'Topic and difficulty are required' });
     }
     
-    let allQuestions = [];
+    let allQuestions: Question[] = [];
     
     // Try to fetch from free APIs first (optional enhancement)
     // For now, we'll use local files but with better structure
@@ -32,7 +43,7 @@ router.get('/', async (req, res) => {
       // Load NeetCode questions
       const neetcodeData = JSON.parse(await fs.readFile(neetcodePath, 'utf8'));
       allQuestions = neetcodeData.questions || [];
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Could not load neetcode-75.json:', error.message);
     }
     
@@ -41,25 +52,25 @@ router.get('/', async (req, res) => {
       const dataStructures = JSON.parse(await fs.readFile(dataStructuresPath, 'utf8'));
       const standardQuestions = dataStructures.questions?.sampleData || [];
       allQuestions = [...allQuestions, ...standardQuestions];
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Could not load data-structures.json:', error.message);
     }
     
     // If no local questions, try to generate from common patterns
     if (allQuestions.length === 0) {
-      allQuestions = generateDefaultQuestions(topic, difficulty);
+      allQuestions = generateDefaultQuestions(topic as string, difficulty as string);
     }
     
     // Filter by topic and difficulty
-    let filteredQuestions = allQuestions.filter(q => 
+    let filteredQuestions = allQuestions.filter((q: Question) => 
       q.topic === topic && q.difficulty === difficulty
     );
     
     // If still no questions, try fuzzy matching
     if (filteredQuestions.length === 0) {
-      filteredQuestions = allQuestions.filter(q => 
+      filteredQuestions = allQuestions.filter((q: Question) => 
         q.difficulty === difficulty && (
-          q.topic.includes(topic) || topic.includes(q.topic)
+          q.topic.includes(topic as string) || (topic as string).includes(q.topic)
         )
       );
     }
@@ -68,18 +79,18 @@ router.get('/', async (req, res) => {
     filteredQuestions = shuffleArray(filteredQuestions);
     
     // Limit results
-    const questions = filteredQuestions.slice(0, parseInt(limit));
+    const questions = filteredQuestions.slice(0, parseInt(limit as string));
     
     res.json(questions);
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error in GET /api/questions:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
 
-function generateDefaultQuestions(topic, difficulty) {
+function generateDefaultQuestions(topic: string, difficulty: string): Question[] {
   // Fallback questions if no local data
-  const commonQuestions = [
+  const commonQuestions: Question[] = [
     {
       id: 'default-001',
       title: 'Two Sum',
@@ -96,11 +107,11 @@ function generateDefaultQuestions(topic, difficulty) {
     }
   ];
   
-  return commonQuestions.filter(q => q.topic === topic && q.difficulty === difficulty);
+  return commonQuestions.filter((q: Question) => q.topic === topic && q.difficulty === difficulty);
 }
 
 // Get a specific question by ID
-router.get('/:id', async (req, res) => {
+router.get('/:id', async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     
@@ -108,12 +119,12 @@ router.get('/:id', async (req, res) => {
     const neetcodePath = path.join(projectRoot, 'neetcode-75.json');
     const dataStructuresPath = path.join(projectRoot, 'data-structures.json');
     
-    let allQuestions = [];
+    let allQuestions: Question[] = [];
     
     try {
       const neetcodeData = JSON.parse(await fs.readFile(neetcodePath, 'utf8'));
       allQuestions = neetcodeData.questions || [];
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Could not load neetcode-75.json:', error.message);
     }
     
@@ -121,25 +132,25 @@ router.get('/:id', async (req, res) => {
       const dataStructures = JSON.parse(await fs.readFile(dataStructuresPath, 'utf8'));
       const standardQuestions = dataStructures.questions?.sampleData || [];
       allQuestions = [...allQuestions, ...standardQuestions];
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Could not load data-structures.json:', error.message);
     }
     
-    const question = allQuestions.find(q => q.id === id);
+    const question = allQuestions.find((q: Question) => q.id === id);
     
     if (!question) {
       return res.status(404).json({ error: 'Question not found' });
     }
     
     res.json(question);
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error in GET /api/questions/:id:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
 
 // Get all available topics
-router.get('/meta/topics', async (req, res) => {
+router.get('/meta/topics', async (req: Request, res: Response) => {
   try {
     const topics = [
       { value: 'arrays', label: 'Arrays' },
@@ -150,13 +161,13 @@ router.get('/meta/topics', async (req, res) => {
     ];
     
     res.json(topics);
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error in GET /api/questions/meta/topics:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
 
-function shuffleArray(array) {
+function shuffleArray<T>(array: T[]): T[] {
   const shuffled = [...array];
   for (let i = shuffled.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
