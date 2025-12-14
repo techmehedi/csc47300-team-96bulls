@@ -36,12 +36,25 @@
         // Insert logout button after profile link
         profileLink.parentElement?.insertBefore(logoutBtn, profileLink.nextSibling);
     }
+    function updateAdminVisibility(user) {
+        const adminElements = document.querySelectorAll('.admin-only');
+        const isAdmin = user && (user.accountType === 'admin' || user.role === 'admin');
+
+        adminElements.forEach(el => {
+            if (isAdmin) {
+                el.style.display = ''; // Reset to default (block/inline)
+            } else {
+                el.style.display = 'none';
+            }
+        });
+    }
+
     async function updateAuthStatus() {
         // Skip auth check on admin page - it doesn't require authentication
         if (window.location.pathname.includes('admin.html')) {
             return;
         }
-        
+
         // Wait for Supabase client to be available (up to 5 seconds)
         let waitCount = 0;
         while (!window.supabaseClient && waitCount < 50) {
@@ -61,10 +74,14 @@
                         // Add logout button
                         addLogoutButton(link);
                     });
+                    updateAdminVisibility(user);
                 }
                 catch (e) {
                     console.error('Error parsing user data:', e);
+                    updateAdminVisibility(null);
                 }
+            } else {
+                updateAdminVisibility(null);
             }
             return;
         }
@@ -100,6 +117,7 @@
                     // Add logout button
                     addLogoutButton(link);
                 });
+                updateAdminVisibility(currentUser);
             }
             else {
                 // No session - check if we have cached user data first
@@ -116,6 +134,14 @@
                     });
                     // Remove logout buttons
                     document.querySelectorAll('.logout-btn').forEach(btn => btn.remove());
+                    updateAdminVisibility(null);
+                } else {
+                    try {
+                        const user = JSON.parse(userData);
+                        updateAdminVisibility(user);
+                    } catch (e) {
+                        updateAdminVisibility(null);
+                    }
                 }
             }
         }
@@ -130,7 +156,7 @@
         if (window.location.pathname.includes('admin.html')) {
             return;
         }
-        
+
         const client = window.supabaseClient;
         if (client && !authStateListener) {
             authStateListener = client.auth.onAuthStateChange((event, session) => {

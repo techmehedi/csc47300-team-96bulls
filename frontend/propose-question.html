@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,6 +9,7 @@
   <link rel="stylesheet" href="css/admin.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
+
 <body class="admin-body">
   <header class="admin-header">
     <div class="admin-header-content">
@@ -19,7 +21,8 @@
         <a href="dashboard.html">Dashboard</a>
         <a href="practice.html">Practice</a>
         <a href="ai-interview.html" class="btn primary">AI Interview</a>
-        <a href="admin.html" class="btn primary" style="margin-right: 0.5rem;"><i class="fas fa-shield-alt"></i> Admin Panel</a>
+        <a href="admin.html" class="btn primary" style="margin-right: 0.5rem;"><i class="fas fa-shield-alt"></i> Admin
+          Panel</a>
         <a href="index.html">Community</a>
         <a href="dashboard.html">Profile</a>
       </nav>
@@ -30,10 +33,12 @@
     <main class="admin-main">
       <div class="admin-content-header">
         <h2 class="content-title">Propose a New Question</h2>
-        <p style="color: #666; margin-top: 0.5rem;">Help expand our question bank by proposing new LeetCode-style problems</p>
+        <p style="color: #666; margin-top: 0.5rem;">Help expand our question bank by proposing new LeetCode-style
+          problems</p>
       </div>
 
-      <div id="authMessage" style="display:none; margin-bottom:1rem; padding:1rem; border:1px solid #f59e0b; background:#fff8eb; color:#92400e; border-radius:8px;">
+      <div id="authMessage"
+        style="display:none; margin-bottom:1rem; padding:1rem; border:1px solid #f59e0b; background:#fff8eb; color:#92400e; border-radius:8px;">
         Please log in to propose a question.
       </div>
 
@@ -50,7 +55,8 @@
 
         <div class="form-section">
           <label for="description">Problem Description *</label>
-          <textarea id="description" name="description" rows="6" required placeholder="Describe the problem in detail..."></textarea>
+          <textarea id="description" name="description" rows="6" required
+            placeholder="Describe the problem in detail..."></textarea>
         </div>
 
         <div class="form-row">
@@ -92,7 +98,8 @@
 
         <div class="form-section">
           <label for="examples">Examples (JSON format)</label>
-          <textarea id="examples" name="examples" rows="4" placeholder='[{"input": "nums = [2,7,11,15], target = 9", "output": "[0,1]", "explanation": "Because nums[0] + nums[1] == 9"}]'></textarea>
+          <textarea id="examples" name="examples" rows="4"
+            placeholder='[{"input": "nums = [2,7,11,15], target = 9", "output": "[0,1]", "explanation": "Because nums[0] + nums[1] == 9"}]'></textarea>
           <small style="color: #999; font-size: 0.85rem;">Enter examples as JSON array</small>
         </div>
 
@@ -125,7 +132,8 @@
 
         <div class="form-section">
           <label for="solution">Solution (optional)</label>
-          <textarea id="solution" name="solution" rows="8" placeholder="function solve(nums, target) {&#10;  // Your solution here&#10;}"></textarea>
+          <textarea id="solution" name="solution" rows="8"
+            placeholder="function solve(nums, target) {&#10;  // Your solution here&#10;}"></textarea>
         </div>
 
         <div class="form-row">
@@ -146,7 +154,8 @@
         </div>
 
         <div class="form-actions">
-          <button type="button" class="btn btn-secondary" onclick="window.location.href='dashboard.html'">Cancel</button>
+          <button type="button" class="btn btn-secondary"
+            onclick="window.location.href='dashboard.html'">Cancel</button>
           <button type="submit" class="btn btn-success">
             <i class="fas fa-paper-plane"></i> Submit Proposal
           </button>
@@ -161,6 +170,5 @@
   <script src="js/auth-check.js"></script>
   <script src="js/propose-question.js"></script>
 </body>
+
 </html>
-
-

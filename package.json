@@ -8,15 +8,19 @@
     "build": "npm run build:backend && npm run build:frontend",
     "build:backend": "tsc -p backend/tsconfig.json",
     "build:frontend": "tsc -p tsconfig.json && node backend/scripts/remove-exports.mjs",
-    "start": "node backend/dist/server.js",
-    "dev": "nodemon --exec \"npm run build:backend && node backend/dist/server.js\"",
+    "start": "node backend/scripts/inject-env.mjs && node backend/dist/server.js",
+    "dev": "nodemon --exec \"node backend/scripts/inject-env.mjs && npm run build:backend && node backend/dist/server.js\"",
     "ts:build": "npm run build",
     "ts:watch": "tsc --watch -p backend/tsconfig.json",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage"
   },
-  "keywords": ["express", "api", "interviewer"],
+  "keywords": [
+    "express",
+    "api",
+    "interviewer"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {
@@ -42,8 +46,12 @@
   "jest": {
     "preset": "ts-jest",
     "testEnvironment": "jsdom",
-    "roots": ["<rootDir>/frontend/ts"],
-    "testMatch": ["**/*.test.ts"],
+    "roots": [
+      "<rootDir>/frontend/ts"
+    ],
+    "testMatch": [
+      "**/*.test.ts"
+    ],
     "moduleNameMapper": {
       "^(\\.{1,2}/.*)\\.js$": "$1"
     },

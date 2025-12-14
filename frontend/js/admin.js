@@ -246,25 +246,27 @@ class AdminPanel {
         ${this.escapeHtml(contentPreview)}
       </div>
       <div class="proposal-actions">
-        <button class="btn-approve" data-id="${proposal.id}">
-          <i class="fas fa-check"></i> Approve
-        </button>
-        <button class="btn-reject" data-id="${proposal.id}">
-          <i class="fas fa-times"></i> Reject
-        </button>
+          <button class="btn-primary view-details-btn" data-id="${proposal.id}">
+            View Details
+          </button>
       </div>
     `;
         // Add click handlers
-        const approveBtn = card.querySelector('.btn-approve');
-        const rejectBtn = card.querySelector('.btn-reject');
-        approveBtn?.addEventListener('click', () => {
+        const viewBtn = card.querySelector('.view-details-btn');
+        viewBtn?.addEventListener('click', () => {
             this.showProposalModal(proposal);
             this.currentProposal = proposal;
         });
-        rejectBtn?.addEventListener('click', () => {
-            this.showProposalModal(proposal);
-            this.currentProposal = proposal;
+
+        // Make whole card clickable too (optional, but good UX)
+        card.addEventListener('click', (e) => {
+            // detailed view if not clicking a button
+            if (e.target.tagName !== 'BUTTON' && !e.target.closest('button')) {
+                this.showProposalModal(proposal);
+                this.currentProposal = proposal;
+            }
         });
+
         return card;
     }
     showProposalModal(proposal) {
@@ -326,6 +328,7 @@ class AdminPanel {
         ` : ''}
       </div>
     `;
+
         if (modal) {
             modal.style.display = 'flex';
         }

@@ -26,7 +26,7 @@ interface ConversationMessage {
 // POST /api/ai-interview - Handle AI interview interactions
 router.post('/', async (req: Request, res: Response) => {
   try {
-    const { sessionId, action, topic, difficulty, conversationHistory, message } = req.body;
+    const { sessionId, action, topic, difficulty, conversationHistory, message, context } = req.body;
 
     if (!sessionId) {
       return res.status(400).json({ success: false, error: 'Session ID required' });
@@ -48,6 +48,22 @@ router.post('/', async (req: Request, res: Response) => {
     // Build conversation history
     let messages: ConversationMessage[] = [];
 
+    // Helper to format context
+    const getContextString = (ctx: any) => {
+      if (!ctx) return '';
+      return `\n\nContext - Current Problem:
+Title: ${ctx.title || 'Unknown'}
+Topic: ${ctx.topic || 'Unknown'}
+Difficulty: ${ctx.difficulty || 'Unknown'}
+Description: ${ctx.description || 'N/A'}
+
+Current Code:
+\`\`\`${ctx.language || 'javascript'}
+${ctx.code || '// No code written yet'}
+\`\`\`
+`;
+    };
+
     if (action === 'start') {
       // Initial question request
       messages = [
@@ -63,61 +79,81 @@ Format it in a friendly, conversational way as if speaking to the candidate.`
         }
       ];
     } else if (action === 'hint') {
+      const contextStr = getContextString(context);
       // Request hint
       messages = [
         { role: 'system', content: SYSTEM_PROMPT },
         ...session.conversationHistory,
         {
           role: 'user',
-          content: 'The candidate is requesting a hint. Provide a helpful hint that guides them toward the solution without revealing it completely. Focus on the next logical step or a key insight they might be missing.'
+          content: `The candidate is requesting a hint.${contextStr}
+Provide a helpful hint that guides them toward the solution without revealing it completely. Focus on the next logical step or a key insight they might be missing.`
         }
       ];
     } else if (action === 'evaluate') {
+      const contextStr = getContextString(context);
       // Request evaluation
       messages = [
         { role: 'system', content: SYSTEM_PROMPT },
         ...session.conversationHistory,
         {
           role: 'user',
-          content: 'The candidate is requesting an evaluation of their current approach. Provide constructive feedback on: 1) Correctness of approach, 2) Time and space complexity, 3) Potential improvements, 4) Edge cases they should consider. Be specific and encouraging.'
+          content: `The candidate is requesting an evaluation of their current approach.${contextStr}
+Provide constructive feedback on: 1) Correctness of approach, 2) Time and space complexity, 3) Potential improvements, 4) Edge cases they should consider. Be specific and encouraging.`
         }
       ];
     } else if (action === 'message') {
-      // Regular message
+      // Regular message with context
+      const contextStr = getContextString(context);
+      // Only include context if it's the first message or explicitly relevant, but for simplicity we append it to the current user message
+      // so the AI always has the latest code state.
+      const fullMessage = message + (context ? contextStr : '');
+
       messages = [
         { role: 'system', content: SYSTEM_PROMPT },
         ...session.conversationHistory,
-        { role: 'user', content: message }
+        { role: 'user', content: fullMessage }
       ];
     } else {
       return res.status(400).json({ success: false, error: 'Invalid action' });
     }
 
     // Call OpenAI API
-    const aiResponse = await callOpenAI(messages);
+    try {
+      const aiResponse = await callOpenAI(messages);
 
-    // Update conversation history
-    if (action === 'message') {
-      session.conversationHistory.push({ role: 'user', content: message });
+      // Update conversation history
+      if (action === 'message') {
+        session.conversationHistory.push({ role: 'user', content: message });
+      }
+      session.conversationHistory.push({ role: 'assistant', content: aiResponse });
+
+      // Keep conversation history manageable (last 20 messages)
+      if (session.conversationHistory.length > 20) {
+        session.conversationHistory = session.conversationHistory.slice(-20);
+      }
+
+      return res.json({
+        success: true,
+        message: aiResponse,
+        conversationHistory: session.conversationHistory
+      });
+    } catch (error: any) {
+      if (error.message.includes('API key not configured')) {
+        return res.status(503).json({
+          success: false,
+          error: 'OpenAI API key is missing. Please add OPENAI_API_KEY to your .env file.',
+          code: 'MISSING_API_KEY'
+        });
+      }
+      throw error;
     }
-    session.conversationHistory.push({ role: 'assistant', content: aiResponse });
-
-    // Keep conversation history manageable (last 20 messages)
-    if (session.conversationHistory.length > 20) {
-      session.conversationHistory = session.conversationHistory.slice(-20);
-    }
-
-    return res.json({
-      success: true,
-      message: aiResponse,
-      conversationHistory: session.conversationHistory
-    });
 
   } catch (error: any) {
     console.error('AI Interview Error:', error);
     return res.status(500).json({
       success: false,
-      error: 'Failed to process AI request',
+      error: error.message || 'Failed to process AI request',
       details: error.message
     });
   }
@@ -128,7 +164,7 @@ async function callOpenAI(messages: ConversationMessage[]): Promise<string> {
   const openaiApiKey = process.env.OPENAI_API_KEY;
 
   if (!openaiApiKey) {
-    throw new Error('OpenAI API key not configured. Please set OPENAI_API_KEY in your .env file.');
+    throw new Error('API key not configured');
   }
 
   try {

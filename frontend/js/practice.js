@@ -73,6 +73,7 @@ class PracticeSession {
         this.initializeSessionControls();
         this.initializeQuestionControls();
         this.initializeTimerControls();
+        this.initializeChatControls();
     }
     initializeSessionControls() {
         // Pause/Resume button
@@ -1559,6 +1560,168 @@ console.log(\`Passed: \${results.filter(r => r.passed).length}/\${results.length
             info: 'info-circle'
         };
         return icons[type] || 'info-circle';
+    }
+
+    initializeChatControls() {
+        const sendBtn = document.getElementById('sendChatBtn');
+        const chatInput = document.getElementById('chatInput');
+
+        if (sendBtn) {
+            sendBtn.addEventListener('click', () => this.sendChatMessage());
+        }
+
+        if (chatInput) {
+            chatInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    this.sendChatMessage();
+                }
+            });
+        }
+    }
+
+    async sendChatMessage() {
+        const input = document.getElementById('chatInput');
+        const message = input.value.trim();
+
+        if (!message) return;
+
+        // Add user message
+        this.addUserMessage(message);
+        input.value = '';
+
+        // Context for AI
+        const question = this.questions[this.currentQuestionIndex];
+        const currentCode = this.codeEditor ? this.codeEditor.getValue() : document.getElementById('codeInput')?.value || '';
+
+        const contextData = {
+            title: question.title,
+            description: question.description,
+            code: currentCode,
+            difficulty: question.difficulty,
+            topic: question.topic
+        };
+        console.log('Sending AI Context:', contextData);
+
+        try {
+            // Show typing indicator (simulated by temporary message)
+            const typingMsgId = this.addSystemMessage('AI is thinking...');
+
+            const response = await this.callAI('message', {
+                message,
+                context: contextData
+            });
+
+            // Remove typing indicator
+            const typingMsg = document.getElementById(typingMsgId);
+            if (typingMsg) typingMsg.remove();
+
+            if (response.success) {
+                this.addAIMessage(response.message);
+            } else {
+                const errorMessage = response.code === 'MISSING_API_KEY'
+                    ? '⚠️ OpenAI API key is missing. Please check your .env file.'
+                    : 'Error: ' + (response.error || 'Failed to get response');
+                this.addSystemMessage(errorMessage);
+            }
+        } catch (error) {
+            console.error('Chat error:', error);
+            // Check if error message contains info about API key (passed from callAI)
+            const msg = error.message.includes('503') || error.message.includes('API key')
+                ? '⚠️ API Configuration Error: OpenAI API Key is missing.'
+                : 'Failed to send message. Please check connection.';
+            this.addSystemMessage(msg);
+        }
+    }
+
+    addUserMessage(text) {
+        const container = document.getElementById('chatMessages');
+        if (!container) return;
+        const div = document.createElement('div');
+        div.className = 'message user';
+        div.innerHTML = `
+            <div class="message-avatar">👤</div>
+            <div class="message-content">${this.escapeHtml(text)}</div>
+        `;
+        container.appendChild(div);
+        container.scrollTop = container.scrollHeight;
+    }
+
+    addAIMessage(text) {
+        const container = document.getElementById('chatMessages');
+        if (!container) return;
+        const div = document.createElement('div');
+        div.className = 'message ai';
+        div.innerHTML = `
+            <div class="message-avatar">🤖</div>
+            <div class="message-content">${this.formatMessage(text)}</div>
+        `;
+        container.appendChild(div);
+        container.scrollTop = container.scrollHeight;
+    }
+
+    addSystemMessage(text) {
+        const container = document.getElementById('chatMessages');
+        if (!container) return;
+        const div = document.createElement('div');
+        const id = 'msg_' + Date.now();
+        div.id = id;
+        div.className = 'message system';
+        div.innerHTML = `
+            <div class="message-content">${text}</div>
+        `;
+        container.appendChild(div);
+        container.scrollTop = container.scrollHeight;
+        return id;
+    }
+
+    async callAI(action, data = {}) {
+        let apiUrl = window.API_URL || 'http://localhost:3000';
+        if (apiUrl.endsWith('/api')) {
+            apiUrl = apiUrl.slice(0, -4);
+        }
+
+        const requestBody = {
+            action,
+            ...data
+        };
+
+        // Reuse backend API if available, otherwise direct fetch
+        if (window.backendAPI && window.backendAPI.chat) {
+            return window.backendAPI.chat(requestBody);
+        }
+
+        // Fallback fetch
+        const response = await fetch(`${apiUrl}/api/ai-interview`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                sessionId: 'practice_' + Date.now(), // specific session ID for practice
+                ...requestBody
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return await response.json();
+    }
+
+    escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    formatMessage(message) {
+        // Convert code blocks
+        message = message.replace(/```(\w+)?\n([\s\S]*?)```/g, (match, lang, code) => {
+            return `<pre><code>${this.escapeHtml(code.trim())}</code></pre>`;
+        });
+        // Convert inline code
+        message = message.replace(/`([^`]+)`/g, '<code>$1</code>');
+        // Convert newlines
+        return message.replace(/\n/g, '<br>');
     }
 }
 // Initialize practice session when DOM is loaded

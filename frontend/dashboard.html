@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,6 +9,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
+
 <body>
   <header class="site-header">
     <div class="nav-container">
@@ -25,26 +27,28 @@
                 <stop offset="100%" style="stop-color:#00f2fe;stop-opacity:1" />
               </linearGradient>
               <filter id="glow">
-                <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                <feGaussianBlur stdDeviation="2" result="coloredBlur" />
                 <feMerge>
-                  <feMergeNode in="coloredBlur"/>
-                  <feMergeNode in="SourceGraphic"/>
+                  <feMergeNode in="coloredBlur" />
+                  <feMergeNode in="SourceGraphic" />
                 </feMerge>
               </filter>
             </defs>
             <g transform="translate(60, 60)">
-              <circle cx="-25" cy="-15" r="6" fill="url(#logoGradient1)" filter="url(#glow)"/>
-              <circle cx="25" cy="-15" r="6" fill="url(#logoGradient2)" filter="url(#glow)"/>
-              <circle cx="0" cy="0" r="10" fill="url(#logoGradient1)" filter="url(#glow)"/>
-              <circle cx="-20" cy="20" r="5" fill="url(#logoGradient2)" filter="url(#glow)"/>
-              <circle cx="20" cy="20" r="5" fill="url(#logoGradient1)" filter="url(#glow)"/>
-              <line x1="-25" y1="-15" x2="0" y2="0" stroke="url(#logoGradient1)" stroke-width="1.5" opacity="0.7"/>
-              <line x1="25" y1="-15" x2="0" y2="0" stroke="url(#logoGradient2)" stroke-width="1.5" opacity="0.7"/>
-              <line x1="0" y1="0" x2="-20" y2="20" stroke="url(#logoGradient1)" stroke-width="1.5" opacity="0.7"/>
-              <line x1="0" y1="0" x2="20" y2="20" stroke="url(#logoGradient2)" stroke-width="1.5" opacity="0.7"/>
-              <circle cx="0" cy="0" r="4" fill="#ffffff" opacity="0.9"/>
-              <text x="-30" y="8" font-family="Monaco, monospace" font-size="18" fill="url(#logoGradient1)" font-weight="bold">{</text>
-              <text x="18" y="8" font-family="Monaco, monospace" font-size="18" fill="url(#logoGradient2)" font-weight="bold">}</text>
+              <circle cx="-25" cy="-15" r="6" fill="url(#logoGradient1)" filter="url(#glow)" />
+              <circle cx="25" cy="-15" r="6" fill="url(#logoGradient2)" filter="url(#glow)" />
+              <circle cx="0" cy="0" r="10" fill="url(#logoGradient1)" filter="url(#glow)" />
+              <circle cx="-20" cy="20" r="5" fill="url(#logoGradient2)" filter="url(#glow)" />
+              <circle cx="20" cy="20" r="5" fill="url(#logoGradient1)" filter="url(#glow)" />
+              <line x1="-25" y1="-15" x2="0" y2="0" stroke="url(#logoGradient1)" stroke-width="1.5" opacity="0.7" />
+              <line x1="25" y1="-15" x2="0" y2="0" stroke="url(#logoGradient2)" stroke-width="1.5" opacity="0.7" />
+              <line x1="0" y1="0" x2="-20" y2="20" stroke="url(#logoGradient1)" stroke-width="1.5" opacity="0.7" />
+              <line x1="0" y1="0" x2="20" y2="20" stroke="url(#logoGradient2)" stroke-width="1.5" opacity="0.7" />
+              <circle cx="0" cy="0" r="4" fill="#ffffff" opacity="0.9" />
+              <text x="-30" y="8" font-family="Monaco, monospace" font-size="18" fill="url(#logoGradient1)"
+                font-weight="bold">{</text>
+              <text x="18" y="8" font-family="Monaco, monospace" font-size="18" fill="url(#logoGradient2)"
+                font-weight="bold">}</text>
             </g>
           </svg>
         </div>
@@ -57,11 +61,11 @@
         <a href="about.html">About</a>
         <a href="services.html">Services</a>
         <a href="contact.html">Contact</a>
-        <a href="dashboard.html" class="active">Dashboard</a>
-        <a href="admin.html" class="btn primary" style="margin-right: 0.5rem;"><i class="fas fa-shield-alt"></i> Admin Panel</a>
+        <a href="admin.html" class="btn primary admin-only" style="margin-right: 0.5rem; display: none;"><i
+            class="fas fa-shield-alt"></i> Admin Panel</a>
         <a href="practice.html" class="btn">Practice</a>
         <a href="ai-interview.html" class="btn primary">AI Interview</a>
-        <a href="login.html" class="login-link"><i class="fa-regular fa-user"></i> Profile</a>
+        <a href="login.html" class="login-link"><i class="fa-regular fa-user"></i> Login</a>
       </nav>
     </div>
   </header>
@@ -225,7 +229,7 @@
                 <p>Submit a new question to be added to the question bank</p>
               </div>
             </a>
-            <a href="admin.html" class="action-card admin-link" id="adminPanelLink" style="display: none;">
+            <a href="admin.html" class="action-card admin-link admin-only" id="adminPanelLink" style="display: none;">
               <div class="action-icon">
                 <i class="fas fa-shield-alt"></i>
               </div>
@@ -262,4 +266,5 @@
   <script src="js/page-transitions.js"></script>
   <script src="js/dashboard.js"></script>
 </body>
+
 </html>

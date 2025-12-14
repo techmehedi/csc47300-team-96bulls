@@ -3,6 +3,8 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import helmet from 'helmet';
 import morgan from 'morgan';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import sessionRoutes from './routes/sessions.js';
 import progressRoutes from './routes/progress.js';
@@ -15,6 +17,9 @@ import aiInterviewRoutes from './routes/ai-interview.js';
 
 // Load environment variables
 dotenv.config();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -29,7 +34,7 @@ if (!supabaseUrl || !supabaseServiceKey) {
 }
 
 // Create a default client for admin operations (if needed)
-const supabase: SupabaseClient | null = supabaseUrl && supabaseServiceKey 
+const supabase: SupabaseClient | null = supabaseUrl && supabaseServiceKey
   ? createClient(supabaseUrl, supabaseServiceKey)
   : null;
 
@@ -50,23 +55,23 @@ app.use(cors({
   origin: function (origin, callback) {
     // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
-    
+
     // Allow if origin is in allowed list
     if (allowedOrigins.includes(origin)) {
       return callback(null, true);
     }
-    
+
     // Also allow localhost variants (for development)
     if (origin.includes('localhost:') || origin.includes('127.0.0.1:')) {
       return callback(null, true);
     }
-    
+
     // For development, allow any localhost/127.0.0.1
-    if (process.env.NODE_ENV !== 'production' && 
-        (origin.startsWith('http://localhost:') || origin.startsWith('http://127.0.0.1:'))) {
+    if (process.env.NODE_ENV !== 'production' &&
+      (origin.startsWith('http://localhost:') || origin.startsWith('http://127.0.0.1:'))) {
       return callback(null, true);
     }
-    
+
     callback(new Error('Not allowed by CORS'));
   },
   credentials: true,
@@ -76,7 +81,17 @@ app.use(cors({
 
 // Middleware (after CORS)
 app.use(helmet({
-  crossOriginResourcePolicy: { policy: "cross-origin" }
+  crossOriginResourcePolicy: { policy: "cross-origin" },
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://cdn.jsdelivr.net", "https://unpkg.com", "cdn.jsdelivr.net", "unpkg.com"],
+      connectSrc: ["'self'", "https://*.supabase.co", "http://127.0.0.1:*", "http://localhost:*", "ws://localhost:*"],
+      imgSrc: ["'self'", "data:", "blob:", "https://*.supabase.co"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://cdnjs.cloudflare.com", "https://fonts.googleapis.com", "cdnjs.cloudflare.com"],
+      fontSrc: ["'self'", "https://cdnjs.cloudflare.com", "https://fonts.gstatic.com", "cdnjs.cloudflare.com", "data:"]
+    }
+  }
 }));
 app.use(morgan('dev'));
 app.use(express.json());
@@ -87,10 +102,22 @@ app.locals.supabase = supabase;
 
 // Health check endpoint
 app.get('/api/health', (req: Request, res: Response) => {
-  res.json({ 
-    status: 'ok', 
+  res.json({
+    status: 'ok',
     timestamp: new Date().toISOString(),
     supabase: supabase ? 'connected' : 'not configured'
+  });
+});
+
+// API Root handler
+app.get('/api', (req: Request, res: Response) => {
+  res.json({
+    message: 'Welcome to the AI Interviewer API',
+    version: '1.0.0',
+    endpoints: {
+      health: '/api/health',
+      docs: '/docs'
+    }
   });
 });
 
@@ -103,6 +130,9 @@ app.use('/api/execute', executeRoutes);
 app.use('/api/proposals', proposalsRoutes);
 app.use('/api/users', usersRoutes);
 app.use('/api/ai-interview', aiInterviewRoutes);
+
+// Serve frontend static files
+app.use(express.static(path.join(__dirname, '../../frontend')));
 
 // Error handling middleware
 app.use(((err: Error, req: Request, res: Response, next: NextFunction) => {

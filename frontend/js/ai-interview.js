@@ -8,17 +8,32 @@ class AIInterview {
     this.timerInterval = null;
     this.topic = null;
     this.difficulty = null;
-    
+
     this.init();
   }
 
   init() {
+    // Check authentication first
+    this.checkAuth();
+
     // Wait for DOM to be ready
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', () => this.setupEventListeners());
     } else {
       this.setupEventListeners();
     }
+  }
+
+  checkAuth() {
+    const userData = localStorage.getItem('ai_interviewer_user');
+    if (!userData) {
+      // User not logged in, redirect to login page
+      // Store current page as redirect target
+      const currentUrl = encodeURIComponent(window.location.href);
+      window.location.href = `login.html?redirect=${currentUrl}`;
+      return false;
+    }
+    return true;
   }
 
   setupEventListeners() {
@@ -65,7 +80,7 @@ class AIInterview {
 
   async handleSetupSubmit(e) {
     e.preventDefault();
-    
+
     const formData = new FormData(e.target);
     this.topic = formData.get('topic');
     this.difficulty = formData.get('difficulty');
@@ -173,7 +188,7 @@ class AIInterview {
 
     try {
       const response = await this.callAI('hint');
-      
+
       if (response.success) {
         this.addAIMessage('💡 Hint: ' + response.message);
       } else {
@@ -193,7 +208,7 @@ class AIInterview {
 
     try {
       const response = await this.callAI('evaluate');
-      
+
       if (response.success) {
         this.addAIMessage('📊 Evaluation: ' + response.message);
       } else {
@@ -214,7 +229,7 @@ class AIInterview {
     if (apiUrl.endsWith('/api')) {
       apiUrl = apiUrl.slice(0, -4);
     }
-    
+
     const requestBody = {
       sessionId: this.sessionId,
       action,
@@ -237,7 +252,7 @@ class AIInterview {
     }
 
     const result = await response.json();
-    
+
     // Update conversation history
     if (result.conversationHistory) {
       this.conversationHistory = result.conversationHistory;
@@ -278,7 +293,7 @@ class AIInterview {
     } else {
       const avatar = type === 'ai' ? '🤖' : '👤';
       const time = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-      
+
       messageDiv.innerHTML = `
         <div class="message-avatar">${avatar}</div>
         <div class="message-bubble">
@@ -352,7 +367,7 @@ class AIInterview {
     if (confirm('Are you sure you want to end this interview session?')) {
       this.stopTimer();
       this.addSystemMessage('Interview session ended. Thank you for practicing!');
-      
+
       // Disable input
       document.getElementById('chatInput').disabled = true;
       document.getElementById('sendBtn').disabled = true;
@@ -370,7 +385,7 @@ class AIInterview {
   showSummary() {
     const duration = Math.floor((new Date() - this.sessionStartTime) / 1000);
     const minutes = Math.floor(duration / 60);
-    
+
     const summary = `
       <strong>Interview Summary:</strong><br><br>
       Duration: ${minutes} minute${minutes !== 1 ? 's' : ''}<br>
